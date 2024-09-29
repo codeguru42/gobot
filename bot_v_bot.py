@@ -6,7 +6,7 @@ from gobot import gotypes
 from gobot.goboard_slow import Board, Move, GameState
 from gobot.gotypes import Player, Point
 
-COLS = string.ascii_uppercase
+COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR: dict[Player, str] = {
     None: ".",
     gotypes.Player.BLACK: "x",

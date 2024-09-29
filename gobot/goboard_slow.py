@@ -45,7 +45,7 @@ class GoString:
         return GoString(
             self.color,
             combined_stones,
-            (go_string.liberties | go_string.liberties) - combined_stones,
+            (self.liberties | go_string.liberties) - combined_stones,
         )
 
     @property

@@ -1,5 +1,5 @@
 import copy
-from typing import Self, Iterable, Optional
+from typing import Self, Iterable, Optional, Tuple, Union
 
 from gobot.gotypes import Point, Player
 
@@ -13,15 +13,15 @@ class Move:
         self.is_resign = is_resign
 
     @classmethod
-    def play(cls, point):
+    def play(cls, point) -> Self:
         return cls(point=point, is_pass=False, is_resign=False)
 
     @classmethod
-    def pass_turn(cls):
+    def pass_turn(cls) -> Self:
         return cls(is_pass=True)
 
     @classmethod
-    def resign(cls):
+    def resign(cls) -> Self:
         return cls(is_resign=True)
 
 
@@ -37,7 +37,7 @@ class GoString:
     def add_liberty(self, point: Point):
         self.liberties.add(point)
 
-    def merge_with(self, go_string: Self):
+    def merge_with(self, go_string: Self) -> Self:
         assert go_string.color == self.color
         combined_stones = self.stones | go_string.stones
         return GoString(
@@ -47,7 +47,7 @@ class GoString:
         )
 
     @property
-    def num_liberties(self):
+    def num_liberties(self) -> int:
         return len(self.liberties)
 
     def __eq__(self, other):
@@ -65,10 +65,10 @@ class Board:
         self.num_cols = num_cols
         self._grid = {}
 
-    def is_on_grid(self, point):
+    def is_on_grid(self, point) -> bool:
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 
-    def get_go_string(self, point):
+    def get_go_string(self, point) -> GoString:
         return self._grid.get(point)
 
     def place_stones(self, player: Player, point: Point):
@@ -125,7 +125,7 @@ class GameState:
         self.previous_state = previous
         self.last_move = move
 
-    def apply_move(self, move: Move):
+    def apply_move(self, move: Move) -> Self:
         if move.is_play:
             next_board = copy.deepcopy(self.board)
             next_board.place_stones(self.next_player, move.point)
@@ -134,13 +134,13 @@ class GameState:
         return GameState(next_board, self.next_player.other, self.previous_state, move)
 
     @classmethod
-    def new_game(cls, board_size):
+    def new_game(cls, board_size: Union[Tuple[int, int], int]) -> Self:
         if isinstance(board_size, int):
             board_size = (board_size, board_size)
         board = Board(*board_size)
         return cls(board, Player.BLACK, None, None)
 
-    def is_over(self):
+    def is_over(self) -> bool:
         if self.last_move is None:
             return False
         if self.last_move.is_resign:
@@ -150,7 +150,7 @@ class GameState:
             return False
         return self.last_move.is_pass and second_last_move.is_pass
 
-    def is_move_self_capture(self, player, move):
+    def is_move_self_capture(self, player, move) -> bool:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
@@ -159,10 +159,10 @@ class GameState:
         return new_string.num_liberties == 0
 
     @property
-    def situation(self):
+    def situation(self) -> Tuple[Player, Board]:
         return self.next_player, self.board
 
-    def does_move_violate_ko(self, player, move):
+    def does_move_violate_ko(self, player, move) -> bool:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
@@ -175,7 +175,7 @@ class GameState:
             past_state = past_state.previous_state
         return False
 
-    def is_valid_move(self, move):
+    def is_valid_move(self, move) -> bool:
         if self.is_over():
             return False
         if move.is_pass or move.is_resign:

@@ -1,4 +1,4 @@
-from gobot.goboard_slow import GoString
+from gobot.goboard import GoString
 from gobot.gotypes import Player, Point
 
 

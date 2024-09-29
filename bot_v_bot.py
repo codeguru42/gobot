@@ -3,7 +3,7 @@ import time
 
 from agents.naive import RandomBot
 from gobot import gotypes
-from gobot.goboard_slow import Board, Move, GameState
+from gobot.goboard import Board, Move, GameState
 from gobot.gotypes import Player, Point
 
 COLS = "ABCDEFGHJKLMNOPQRST"

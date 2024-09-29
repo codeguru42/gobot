@@ -2,7 +2,7 @@ import random
 
 from agents.base import Agent
 from agents.helpers import is_point_an_eye
-from gobot.goboard_slow import GameState, Move
+from gobot.goboard import GameState, Move
 from gobot.gotypes import Point
 
 

@@ -68,6 +68,9 @@ class Board:
     def is_on_grid(self, point):
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 
+    def get_go_string(self, point):
+        return self._grid.get(point)
+
     def place_stones(self, player: Player, point: Point):
         assert self.is_on_grid(point)
         assert self._grid.get(point) is None
@@ -146,3 +149,11 @@ class GameState:
         if second_last_move is None:
             return False
         return self.last_move.is_pass and second_last_move.is_pass
+
+    def is_move_self_capture(self, player, move):
+        if not move.is_play:
+            return False
+        next_board = copy.deepcopy(self.board)
+        next_board.place_stones(player, move.point)
+        new_string = next_board.get_go_string(move.point)
+        return new_string.num_liberties == 0

@@ -1,6 +1,7 @@
-from typing import Self, Iterable
+import copy
+from typing import Self, Iterable, Optional
 
-from gobot.gotypes import Point
+from gobot.gotypes import Point, Player
 
 
 class Move:
@@ -59,7 +60,7 @@ class GoString:
 
 
 class Board:
-    def __init__(self, num_rows, num_cols):
+    def __init__(self, num_rows: int, num_cols: int):
         self.num_rows = num_rows
         self.num_cols = num_cols
         self._grid = {}
@@ -67,7 +68,7 @@ class Board:
     def is_on_grid(self, point):
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 
-    def place_stones(self, player, point):
+    def place_stones(self, player: Player, point: Point):
         assert self.is_on_grid(point)
         assert self._grid.get(point) is None
         adjacent_same_color = []
@@ -106,3 +107,42 @@ class Board:
                 if neighbor_string is not string:
                     neighbor_string.add_liberty(point)
             self._grid[point] = None
+
+
+class GameState:
+    def __init__(
+        self,
+        board: Board,
+        next_player: Player,
+        previous: Optional[Self],
+        move: Optional[Move],
+    ):
+        self.board = board
+        self.next_player = next_player
+        self.previous_state = previous
+        self.last_move = move
+
+    def apply_move(self, move: Move):
+        if move.is_play:
+            next_board = copy.deepcopy(self.board)
+            next_board.place_stones(self.next_player, move.point)
+        else:
+            next_board = self.board
+        return GameState(next_board, self.next_player.other, self.previous_state, move)
+
+    @classmethod
+    def new_game(cls, board_size):
+        if isinstance(board_size, int):
+            board_size = (board_size, board_size)
+        board = Board(*board_size)
+        return cls(board, Player.BLACK, None, None)
+
+    def is_over(self):
+        if self.last_move is None:
+            return False
+        if self.last_move.is_resign:
+            return True
+        second_last_move = self.previous_state.last_move
+        if second_last_move is None:
+            return False
+        return self.last_move.is_pass and second_last_move.is_pass

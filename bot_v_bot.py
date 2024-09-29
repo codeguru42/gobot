@@ -33,7 +33,7 @@ def print_board(board: Board):
             stone = board.get(Point(row, col))
             line.append(STONE_TO_CHAR[stone])
         print(f"{bump}{row} {"".join(line)}")
-    print("    " + "  ".join(COLS[: board.num_cols]))
+    print("   " + "".join(COLS[: board.num_cols]))
 
 
 def main():

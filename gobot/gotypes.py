@@ -11,7 +11,7 @@ class Player(Enum):
         return Player.BLACK if self == Player.WHITE else Player.WHITE
 
 
-@dataclass
+@dataclass(frozen=True)
 class Point:
     row: int
     col: int

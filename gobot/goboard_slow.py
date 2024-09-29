@@ -65,10 +65,10 @@ class Board:
         self.num_cols = num_cols
         self._grid: dict[Point, GoString] = {}
 
-    def is_on_grid(self, point) -> bool:
+    def is_on_grid(self, point: Point) -> bool:
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 
-    def get(self, point) -> Optional[Player]:
+    def get(self, point: Point) -> Optional[Player]:
         string = self._grid.get(point)
         if string is None:
             return None

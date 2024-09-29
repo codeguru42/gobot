@@ -1,7 +1,6 @@
 import string
 import time
 
-import agents.naive
 from agents.naive import RandomBot
 from gobot import gotypes
 from gobot.goboard_slow import Board, Move, GameState
@@ -33,7 +32,7 @@ def print_board(board: Board):
             stone = board.get(Point(row, col))
             line.append(STONE_TO_CHAR[stone])
         print(f"{bump}{row} {"".join(line)}")
-    print("   " + "".join(COLS[: board.num_cols]))
+    print("   " + COLS[: board.num_cols])
 
 
 def main():

@@ -63,12 +63,18 @@ class Board:
     def __init__(self, num_rows: int, num_cols: int):
         self.num_rows = num_rows
         self.num_cols = num_cols
-        self._grid = {}
+        self._grid: dict[Point, GoString] = {}
 
     def is_on_grid(self, point) -> bool:
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 
-    def get_go_string(self, point) -> GoString:
+    def get(self, point) -> Optional[Player]:
+        string = self._grid.get(point)
+        if string is None:
+            return None
+        return string.color
+
+    def get_go_string(self, point) -> Optional[GoString]:
         return self._grid.get(point)
 
     def place_stones(self, player: Player, point: Point):
@@ -181,7 +187,7 @@ class GameState:
         if move.is_pass or move.is_resign:
             return True
         return (
-            self.board.get_go_string(move.point) is None
+            self.board.get(move.point) is None
             and not self.is_move_self_capture(self.next_player, move)
             and not self.does_move_violate_ko(self.next_player, move)
         )

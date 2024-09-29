@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Iterable, Self
 
 
 class Player(Enum):
@@ -16,7 +17,7 @@ class Point:
     row: int
     col: int
 
-    def neighbors(self):
+    def neighbors(self) -> Iterable[Self]:
         return [
             Point(self.row - 1, self.col),
             Point(self.row + 1, self.col),

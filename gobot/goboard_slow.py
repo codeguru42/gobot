@@ -77,7 +77,7 @@ class Board:
     def get_go_string(self, point) -> Optional[GoString]:
         return self._grid.get(point)
 
-    def place_stones(self, player: Player, point: Point):
+    def place_stone(self, player: Player, point: Point):
         assert self.is_on_grid(point)
         assert self._grid.get(point) is None
         adjacent_same_color = []
@@ -134,7 +134,7 @@ class GameState:
     def apply_move(self, move: Move) -> Self:
         if move.is_play:
             next_board = copy.deepcopy(self.board)
-            next_board.place_stones(self.next_player, move.point)
+            next_board.place_stone(self.next_player, move.point)
         else:
             next_board = self.board
         return GameState(next_board, self.next_player.other, self, move)
@@ -160,7 +160,7 @@ class GameState:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
-        next_board.place_stones(player, move.point)
+        next_board.place_stone(player, move.point)
         new_string = next_board.get_go_string(move.point)
         return new_string.num_liberties == 0
 
@@ -172,7 +172,7 @@ class GameState:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
-        next_board.place_stones(player, move.point)
+        next_board.place_stone(player, move.point)
         next_situation = (player.other, next_board)
         past_state = self.previous_state
         while past_state is not None:

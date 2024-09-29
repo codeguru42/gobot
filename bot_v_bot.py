@@ -1,7 +1,10 @@
 import string
+import time
 
+import agents.naive
+from agents.naive import RandomBot
 from gobot import gotypes
-from gobot.goboard_slow import Board, Move
+from gobot.goboard_slow import Board, Move, GameState
 from gobot.gotypes import Player, Point
 
 COLS = string.ascii_uppercase
@@ -31,3 +34,21 @@ def print_board(board: Board):
             line.append(STONE_TO_CHAR[stone])
         print(f"{bump}{row} {"".join(line)}")
     print("    " + "  ".join(COLS[: board.num_cols]))
+
+
+def main():
+    board_size = 9
+    game = GameState.new_game(board_size)
+    bots = {Player.BLACK: RandomBot(), Player.WHITE: RandomBot()}
+    while not game.is_over():
+        time.sleep(0.3)
+
+        print(chr(27) + "[2J")
+        print_board(game.board)
+        bot_move = bots[game.next_player].select_move(game)
+        print_move(game.next_player, bot_move)
+        game = game.apply_move(bot_move)
+
+
+if __name__ == "__main__":
+    main()

@@ -26,7 +26,9 @@ class Move:
 
 
 class GoString:
-    def __init__(self, color, stones: Iterable[Point], liberties: Iterable[Point]):
+    def __init__(
+        self, color: Player, stones: Iterable[Point], liberties: Iterable[Point]
+    ):
         self.color = color
         self.stones = set(stones)
         self.liberties = set(liberties)

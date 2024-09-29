@@ -30,14 +30,16 @@ class GoString:
         self, color: Player, stones: Iterable[Point], liberties: Iterable[Point]
     ):
         self.color = color
-        self.stones = set(stones)
-        self.liberties = set(liberties)
+        self.stones = frozenset(stones)
+        self.liberties = frozenset(liberties)
 
-    def remove_liberty(self, point: Point):
-        self.liberties.remove(point)
+    def without_liberty(self, point: Point) -> Self:
+        new_liberties = self.liberties - {point}
+        return GoString(self.color, self.stones, new_liberties)
 
-    def add_liberty(self, point: Point):
-        self.liberties.add(point)
+    def with_liberty(self, point: Point) -> Self:
+        new_liberties = self.liberties | {point}
+        return GoString(self.color, self.stones, new_liberties)
 
     def merge_with(self, go_string: Self) -> Self:
         assert go_string.color == self.color

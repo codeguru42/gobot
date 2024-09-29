@@ -137,7 +137,7 @@ class GameState:
             next_board.place_stones(self.next_player, move.point)
         else:
             next_board = self.board
-        return GameState(next_board, self.next_player.other, self.previous_state, move)
+        return GameState(next_board, self.next_player.other, self, move)
 
     @classmethod
     def new_game(cls, board_size: Union[Tuple[int, int], int]) -> Self:

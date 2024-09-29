@@ -150,6 +150,13 @@ class GameState:
         self.board = board
         self.next_player = next_player
         self.previous_state = previous
+        if self.previous_state is None:
+            self.previous_states = frozenset()
+        else:
+            self.previous_state = frozenset(
+                previous.previous_states
+                | {(previous.next_player, previous.board.zobrist_hash())}
+            )
         self.last_move = move
 
     def apply_move(self, move: Move) -> Self:

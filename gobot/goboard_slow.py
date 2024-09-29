@@ -174,3 +174,14 @@ class GameState:
                 return True
             past_state = past_state.previous_state
         return False
+
+    def is_valid_move(self, move):
+        if self.is_over():
+            return False
+        if move.is_pass or move.is_resign:
+            return True
+        return (
+            self.board.get_go_string(move.point) is None
+            and not self.is_move_self_capture(self.next_player, move)
+            and not self.does_move_violate_ko(self.next_player, move)
+        )

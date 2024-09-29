@@ -157,3 +157,20 @@ class GameState:
         next_board.place_stones(player, move.point)
         new_string = next_board.get_go_string(move.point)
         return new_string.num_liberties == 0
+
+    @property
+    def situation(self):
+        return self.next_player, self.board
+
+    def does_move_violate_ko(self, player, move):
+        if not move.is_play:
+            return False
+        next_board = copy.deepcopy(self.board)
+        next_board.place_stones(player, move.point)
+        next_situation = (player.other, next_board)
+        past_state = self.previous_state
+        while past_state is not None:
+            if past_state.situation == next_situation:
+                return True
+            past_state = past_state.previous_state
+        return False

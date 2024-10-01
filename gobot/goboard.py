@@ -218,3 +218,4 @@ class GameState:
                 if self.is_valid_move(m):
                     yield m
         yield Move.pass_turn()
+        yield Move.resign()

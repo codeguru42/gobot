@@ -1,5 +1,5 @@
 import copy
-from typing import Self, Iterable, Optional, Tuple, Union
+from typing import Self, Iterable, Optional, Tuple, Union, Generator
 
 from gobot import zobrist
 from gobot.gotypes import Point, Player
@@ -210,3 +210,11 @@ class GameState:
             and not self.is_move_self_capture(self.next_player, move)
             and not self.does_move_violate_ko(self.next_player, move)
         )
+
+    def legal_moves(self) -> Generator[Move, None, None]:
+        for r in range(1, self.board.num_rows):
+            for c in range(1, self.board.num_cols):
+                m = Move.play(Point(r, c))
+                if self.is_valid_move(m):
+                    yield m
+        yield Move.pass_turn()

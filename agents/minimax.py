@@ -52,3 +52,13 @@ def best_result(game_state: GameState):
         if our_result.value > best_result_so_far.value:
             best_result_so_far = our_result
     return best_result_so_far
+
+
+def reverse_game_result(game_result: GameResult):
+    match game_result:
+        case GameResult.WIN:
+            return GameResult.LOSS
+        case GameResult.DRAW:
+            return GameResult.DRAW
+        case GameResult.LOSS:
+            return GameResult.WIN

@@ -219,3 +219,12 @@ class GameState:
                     yield m
         yield Move.pass_turn()
         yield Move.resign()
+
+    def winner(self):
+        if not self.is_over():
+            return None
+        if self.last_move.is_resign:
+            return self.next_player
+
+        game_result = compute_game_result()
+        return game_result.winner

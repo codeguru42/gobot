@@ -212,8 +212,8 @@ class GameState:
         )
 
     def legal_moves(self) -> Generator[Move, None, None]:
-        for r in range(1, self.board.num_rows):
-            for c in range(1, self.board.num_cols):
+        for r in range(1, self.board.num_rows + 1):
+            for c in range(1, self.board.num_cols + 1):
                 m = Move.play(Point(r, c))
                 if self.is_valid_move(m):
                     yield m

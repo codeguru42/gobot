@@ -88,7 +88,7 @@ def evaluate_territory(board: "Board") -> Territory:
             else:
                 group, neighbors = _collect_region(p, board)
                 if len(neighbors) == 1:
-                    neighbor_stone = neighbors.pop(0)
+                    neighbor_stone = neighbors.pop()
                     stone_str = "b" if neighbor_stone == Player.BLACK else "w"
                     fill_with = f"territory_{stone_str}"
                 else:

@@ -5,6 +5,7 @@ from agents.naive import RandomBot
 from gobot import gotypes
 from gobot.goboard import Board, Move, GameState
 from gobot.gotypes import Player, Point
+from gobot.zobrist import state
 
 COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR: dict[Player, str] = {
@@ -47,6 +48,7 @@ def main():
         bot_move = bots[game.next_player].select_move(game)
         print_move(game.next_player, bot_move)
         game = game.apply_move(bot_move)
+    print(game.winner())
 
 
 if __name__ == "__main__":

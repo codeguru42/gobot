@@ -3,6 +3,7 @@ from typing import Self, Iterable, Optional, Tuple, Union, Generator
 
 from gobot import zobrist
 from gobot.gotypes import Point, Player
+from scoring import compute_game_result
 
 
 class Move:
@@ -226,5 +227,5 @@ class GameState:
         if self.last_move.is_resign:
             return self.next_player
 
-        game_result = compute_game_result()
+        game_result = compute_game_result(self)
         return game_result.winner

@@ -3,6 +3,7 @@ import random
 
 from agents.base import Agent
 from gobot.goboard import GameState
+from gobot.gotypes import Point, Player
 
 
 class GameResult(Enum):
@@ -62,3 +63,21 @@ def reverse_game_result(game_result: GameResult):
             return GameResult.DRAW
         case GameResult.LOSS:
             return GameResult.WIN
+
+
+def capture_diff(game_state: GameState) -> int:
+    black_stones = 0
+    white_stones = 0
+    for r in range(1, game_state.board.num_rows + 1):
+        for c in range(1, game_state.board.num_cols + 1):
+            p = Point(r, c)
+            color = game_state.board.get(p)
+            match color:
+                case Player.BLACK:
+                    black_stones += 1
+                case Player.WHITE:
+                    white_stones += 1
+    diff = black_stones - white_stones
+    if game_state.next_player == Player.BLACK:
+        return diff
+    return -diff

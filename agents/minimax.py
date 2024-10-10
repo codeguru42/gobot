@@ -42,7 +42,7 @@ class MinimaxAgent(Agent):
 
 
 def best_result(
-    self, game_state: GameState, max_depth: int, eval_fn: Callable[[GameState], int]
+    game_state: GameState, max_depth: int, eval_fn: Callable[[GameState], int]
 ) -> int:
     if game_state.is_over():
         if game_state.winner() == game_state.next_player:

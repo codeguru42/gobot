@@ -1,12 +1,9 @@
-import string
 import time
 
 from agents.minimax import MinimaxAgent, capture_diff
-from agents.naive import RandomBot
 from gobot import gotypes
 from gobot.goboard import Board, Move, GameState
 from gobot.gotypes import Player, Point
-from gobot.zobrist import state
 
 COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR: dict[Player, str] = {

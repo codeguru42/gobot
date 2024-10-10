@@ -1,4 +1,4 @@
-from black.cache import dataclass
+from dataclasses import dataclass
 
 from gobot.gotypes import Player, Point
 

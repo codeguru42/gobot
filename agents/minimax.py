@@ -1,9 +1,14 @@
+from collections.abc import Callable
 from enum import Enum
 import random
 
 from agents.base import Agent
 from gobot.goboard import GameState
 from gobot.gotypes import Point, Player
+
+
+MAX_SCORE = 999999
+MIN_SCORE = -999999
 
 
 class GameResult(Enum):
@@ -36,33 +41,26 @@ class MinimaxAgent(Agent):
         return random.choice(losing_moves)
 
 
-def best_result(game_state: GameState):
+def best_result(
+    self, game_state: GameState, max_depth: int, eval_fn: Callable[[GameState], int]
+) -> int:
     if game_state.is_over():
         if game_state.winner() == game_state.next_player:
-            return GameResult.WIN
-        elif game_state.winner() is None:
-            return GameResult.DRAW
+            return MAX_SCORE
         else:
-            return GameResult.LOSS
+            return MIN_SCORE
 
-    best_result_so_far = GameResult.LOSS
+    if max_depth == 0:
+        return eval_fn(game_state)
+
+    best_result_so_far = MIN_SCORE
     for candidate_move in game_state.legal_moves():
         next_state = game_state.apply_move(candidate_move)
-        opponent_best_result = best_result(next_state)
-        our_result = reverse_game_result(opponent_best_result)
-        if our_result.value > best_result_so_far.value:
+        opponent_best_result = best_result(next_state, max_depth - 1, eval_fn)
+        our_result = -opponent_best_result
+        if our_result > best_result_so_far:
             best_result_so_far = our_result
     return best_result_so_far
-
-
-def reverse_game_result(game_result: GameResult):
-    match game_result:
-        case GameResult.WIN:
-            return GameResult.LOSS
-        case GameResult.DRAW:
-            return GameResult.DRAW
-        case GameResult.LOSS:
-            return GameResult.WIN
 
 
 def capture_diff(game_state: GameState) -> int:

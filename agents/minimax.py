@@ -3,7 +3,7 @@ from enum import Enum
 import random
 
 from agents.base import Agent
-from gobot.goboard import GameState
+from gobot.goboard import GameState, Move
 from gobot.gotypes import Point, Player
 
 
@@ -18,27 +18,27 @@ class GameResult(Enum):
 
 
 class MinimaxAgent(Agent):
-    def select_move(self, game_state: GameState):
-        winning_moves = []
-        draw_moves = []
-        losing_moves = []
+    def __init__(self, max_depth: int, eval_fn: Callable[[GameState], int]):
+        super().__init__()
+        self.max_depth = max_depth
+        self.eval_fn = eval_fn
+
+    def select_move(self, game_state: GameState) -> Move:
+        best_moves = []
+        best_score = None
 
         for possible_move in game_state.legal_moves():
             next_state = game_state.apply_move(possible_move)
-            opponent_best_outcome = best_result(next_state)
-            our_best_outcome = reverse_game_result(opponent_best_outcome)
-            if our_best_outcome == GameResult.WIN:
-                winning_moves.append(possible_move)
-            elif our_best_outcome == GameResult.DRAW:
-                draw_moves.append(possible_move)
-            else:
-                losing_moves.append(possible_move)
-
-        if winning_moves:
-            return random.choice(winning_moves)
-        if draw_moves:
-            return random.choice(draw_moves)
-        return random.choice(losing_moves)
+            opponent_best_outcome = best_result(
+                next_state, self.max_depth, self.eval_fn
+            )
+            our_best_outcome = -opponent_best_outcome
+            if not best_moves or our_best_outcome > best_score:
+                best_moves = [possible_move]
+                best_score = our_best_outcome
+            elif our_best_outcome == best_score:
+                best_moves.append(possible_move)
+        return random.choice(best_moves)
 
 
 def best_result(

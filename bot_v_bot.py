@@ -52,7 +52,7 @@ def main():
         bot_move = bots[game.next_player].select_move(game)
         print_move(game.next_player, bot_move)
         game = game.apply_move(bot_move)
-    print(game.winner())
+    print(f"{game.winner()} wins")
 
 
 if __name__ == "__main__":

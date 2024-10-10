@@ -1,6 +1,7 @@
 import string
 import time
 
+from agents.minimax import MinimaxAgent, capture_diff
 from agents.naive import RandomBot
 from gobot import gotypes
 from gobot.goboard import Board, Move, GameState
@@ -39,7 +40,10 @@ def print_board(board: Board):
 def main():
     board_size = 9
     game = GameState.new_game(board_size)
-    bots = {Player.BLACK: RandomBot(), Player.WHITE: RandomBot()}
+    bots = {
+        Player.BLACK: MinimaxAgent(1, capture_diff),
+        Player.WHITE: MinimaxAgent(1, capture_diff),
+    }
     while not game.is_over():
         time.sleep(0.3)
 

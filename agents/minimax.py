@@ -1,11 +1,10 @@
+import random
 from collections.abc import Callable
 from enum import Enum
-import random
 
 from agents.base import Agent
 from gobot.goboard import GameState, Move
 from gobot.gotypes import Point, Player
-
 
 MAX_SCORE = 999999
 MIN_SCORE = -999999

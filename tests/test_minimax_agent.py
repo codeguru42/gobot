@@ -1,6 +1,7 @@
 import pytest
 
-from gobot.goboard import Board
+from agents.minimax import MinimaxAgent, capture_diff
+from gobot.goboard import Board, GameState, Move
 from gobot.gotypes import Player, Point
 
 
@@ -20,6 +21,25 @@ def board(filename: str, num_rows: int, num_cols: int) -> Board:
     return b
 
 
-@pytest.mark.parametrize("filename,num_rows,num_cols", [("board1.txt", 9, 9)])
-def test_board1(board: Board):
-    pass
+@pytest.fixture
+def game_state(board: Board, next_player: Player) -> GameState:
+    return GameState(board, next_player)
+
+
+@pytest.fixture
+def minimax_agent() -> MinimaxAgent:
+    return MinimaxAgent(1, capture_diff)
+
+
+@pytest.mark.parametrize(
+    "filename,num_rows,num_cols,next_player", [("board1.txt", 9, 9, Player.BLACK)]
+)
+def test_board1(
+    filename: str,
+    num_rows: int,
+    num_cols: int,
+    next_player: Player,
+    minimax_agent: MinimaxAgent,
+    game_state: GameState,
+):
+    assert minimax_agent.select_move(game_state) == Move.pass_turn()

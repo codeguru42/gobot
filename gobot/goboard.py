@@ -145,8 +145,8 @@ class GameState:
         self,
         board: Board,
         next_player: Player,
-        previous: Optional[Self],
-        move: Optional[Move],
+        previous: Optional[Self] = None,
+        move: Optional[Move] = None,
     ):
         self.board = board
         self.next_player = next_player
@@ -173,7 +173,7 @@ class GameState:
         if isinstance(board_size, int):
             board_size = (board_size, board_size)
         board = Board(*board_size)
-        return cls(board, Player.BLACK, None, None)
+        return cls(board, Player.BLACK)
 
     def is_over(self) -> bool:
         if self.last_move is None:

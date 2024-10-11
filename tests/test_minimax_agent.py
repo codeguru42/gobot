@@ -43,3 +43,17 @@ def test_board1(
     game_state: GameState,
 ):
     assert minimax_agent.select_move(game_state) == Move.pass_turn()
+
+
+@pytest.mark.parametrize(
+    "filename,num_rows,num_cols,next_player", [("board2.txt", 9, 9, Player.WHITE)]
+)
+def test_board1(
+    filename: str,
+    num_rows: int,
+    num_cols: int,
+    next_player: Player,
+    minimax_agent: MinimaxAgent,
+    game_state: GameState,
+):
+    assert minimax_agent.select_move(game_state) == Move.play(Point(2, 3))

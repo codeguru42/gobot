@@ -48,7 +48,7 @@ def test_board1(
 @pytest.mark.parametrize(
     "filename,num_rows,num_cols,next_player", [("board2.txt", 9, 9, Player.WHITE)]
 )
-def test_board1(
+def test_board2(
     filename: str,
     num_rows: int,
     num_cols: int,

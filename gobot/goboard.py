@@ -30,7 +30,12 @@ class Move:
         return cls(is_resign=True)
 
 
+@dataclass
 class GoString:
+    color: Player
+    stones: set[Point]
+    liberties: set[Point]
+
     def __init__(
         self, color: Player, stones: Iterable[Point], liberties: Iterable[Point]
     ):

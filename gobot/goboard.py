@@ -33,8 +33,8 @@ class Move:
 @dataclass
 class GoString:
     color: Player
-    stones: set[Point]
-    liberties: set[Point]
+    stones: frozenset[Point]
+    liberties: frozenset[Point]
 
     def __init__(
         self, color: Player, stones: Iterable[Point], liberties: Iterable[Point]

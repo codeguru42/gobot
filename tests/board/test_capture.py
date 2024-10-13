@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from gobot.goboard import Board, Move
+from gobot.goboard import Board
 from gobot.gotypes import Player, Point
 from tests.board.conftest import board_expected
 

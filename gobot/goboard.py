@@ -75,6 +75,9 @@ class Board:
         self._grid: dict[Point, Optional[GoString]] = {}
         self._hash = zobrist.EMPTY_BOARD
 
+    def __eq__(self, __value):
+        return isinstance(__value, Board) and self._hash == __value._hash
+
     def is_on_grid(self, point: Point) -> bool:
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
 

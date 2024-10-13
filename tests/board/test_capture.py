@@ -16,7 +16,7 @@ from tests.board.conftest import board_expected
             9,
             9,
             Player.BLACK,
-            Point(4, 4),
+            Point(4, 6),
         ),
         (
             Path(__file__).parent / "board2.txt",

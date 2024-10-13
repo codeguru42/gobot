@@ -1,15 +1,15 @@
 import pytest
 
-from gobot.goboard import Board
+from gobot.goboard import Board, Move
 from gobot.gotypes import Player, Point
 from tests.board.conftest import board_expected
 
 
 @pytest.mark.parametrize(
-    "filename,filename_expected,num_rows,num_cols",
+    "filename,filename_expected,num_rows,num_cols,player,point",
     [
-        ("board1.txt", "board1-expected.txt", 9, 9),
-        ("board2.txt", "board2-expected.txt", 9, 9),
+        ("board1.txt", "board1-expected.txt", 9, 9, Player.BLACK, Point(4, 4)),
+        ("board2.txt", "board2-expected.txt", 9, 9, Player.BLACK, Point(1, 1)),
     ],
 )
 def test_capture(
@@ -19,6 +19,8 @@ def test_capture(
     filename_expected: str,
     num_rows: int,
     num_cols: int,
+    player: Player,
+    point: Point,
 ):
-    board.place_stone(Player.BLACK, Point(4, 6))
+    board.place_stone(player, point)
     assert board == board_expected

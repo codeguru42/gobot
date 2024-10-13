@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from gobot.goboard import Board, Move
@@ -8,15 +10,29 @@ from tests.board.conftest import board_expected
 @pytest.mark.parametrize(
     "filename,filename_expected,num_rows,num_cols,player,point",
     [
-        ("board1.txt", "board1-expected.txt", 9, 9, Player.BLACK, Point(4, 4)),
-        ("board2.txt", "board2-expected.txt", 9, 9, Player.BLACK, Point(1, 1)),
+        (
+            Path(__file__).parent / "board1.txt",
+            Path(__file__).parent / "board1-expected.txt",
+            9,
+            9,
+            Player.BLACK,
+            Point(4, 4),
+        ),
+        (
+            Path(__file__).parent / "board2.txt",
+            Path(__file__).parent / "board2-expected.txt",
+            9,
+            9,
+            Player.BLACK,
+            Point(1, 1),
+        ),
     ],
 )
 def test_capture(
     board: Board,
     board_expected: Board,
-    filename: str,
-    filename_expected: str,
+    filename: Path,
+    filename_expected: Path,
     num_rows: int,
     num_cols: int,
     player: Player,

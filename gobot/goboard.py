@@ -128,9 +128,6 @@ class Board:
                 self._replace_string(replacement)
             else:
                 self._remove_string(other_color_string)
-        for other_color_string in adjacent_opposite_color:
-            if other_color_string.num_liberties == 0:
-                self._remove_string(other_color_string)
 
     def _remove_string(self, string: GoString):
         for point in string.stones:
@@ -139,7 +136,7 @@ class Board:
                 if neighbor_string is None:
                     continue
                 if neighbor_string is not string:
-                    self._replace_string(neighbor_string.without_liberty(point))
+                    self._replace_string(neighbor_string.with_liberty(point))
             self._grid[point] = None
             self._hash ^= zobrist.HASH_CODE[point, string.color]
 

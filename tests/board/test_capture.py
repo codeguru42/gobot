@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from go import Board
-from go import Player, Point
+from go.goboard import Board
+from go.gotypes import Player, Point
 from tests.board.conftest import board_expected
 
 

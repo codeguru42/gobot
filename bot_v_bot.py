@@ -38,8 +38,8 @@ def main():
     board_size = 9
     game = GameState.new_game(board_size)
     bots = {
-        Player.BLACK: MinimaxAgent(1, capture_diff),
-        Player.WHITE: MinimaxAgent(1, capture_diff),
+        Player.BLACK: MinimaxAgent(2, capture_diff),
+        Player.WHITE: MinimaxAgent(2, capture_diff),
     }
     while not game.is_over():
         time.sleep(0.3)

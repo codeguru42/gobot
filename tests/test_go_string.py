@@ -1,5 +1,5 @@
-from gobot.goboard import GoString
-from gobot.gotypes import Player, Point
+from go import GoString
+from go import Player, Point
 
 
 def test_go_string_merge():

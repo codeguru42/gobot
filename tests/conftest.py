@@ -1,7 +1,7 @@
 import pytest
 
-from gobot.goboard import Board
-from gobot.gotypes import Player, Point
+from go import Board
+from go import Player, Point
 
 
 @pytest.fixture

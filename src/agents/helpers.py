@@ -1,5 +1,5 @@
-from gobot.goboard import Board
-from gobot.gotypes import Point, Player
+from go.goboard import Board
+from go.gotypes import Point, Player
 
 
 def is_point_an_eye(board: Board, point: Point, color: Player) -> bool:

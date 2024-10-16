@@ -1,8 +1,8 @@
 import pytest
 
-from agents.minimax import MinimaxAgent, capture_diff
-from gobot.goboard import Board, GameState, Move
-from gobot.gotypes import Player, Point
+from agents import MinimaxAgent, capture_diff
+from go import Board, GameState, Move
+from go import Player, Point
 from tests.conftest import board
 
 

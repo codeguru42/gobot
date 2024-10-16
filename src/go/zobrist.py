@@ -1,6 +1,6 @@
 import random
 
-from gobot.gotypes import Player, Point
+from go.gotypes import Player, Point
 
 MAX63 = 0x7FFFFFFFFFFFFFFF
 

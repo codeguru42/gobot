@@ -3,8 +3,8 @@ from collections.abc import Callable
 from enum import Enum
 
 from agents.base import Agent
-from gobot.goboard import GameState, Move
-from gobot.gotypes import Point, Player
+from go.goboard import GameState, Move
+from go.gotypes import Player, Point
 
 MAX_SCORE = 999999
 MIN_SCORE = -999999

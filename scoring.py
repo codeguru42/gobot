@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from gobot.gotypes import Player, Point
+from go.gotypes import Player, Point
 
 
 @dataclass

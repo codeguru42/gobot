@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pytest
 
-from gobot.goboard import GameState, Move
-from gobot.gotypes import Player, Point
+from go import GameState, Move
+from go import Player, Point
 from test_minimax_agent import game_state
 
 

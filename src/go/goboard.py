@@ -2,8 +2,8 @@ import copy
 from dataclasses import dataclass
 from typing import Self, Iterable, Optional, Tuple, Union, Generator
 
-from gobot import zobrist
-from gobot.gotypes import Point, Player
+from go import zobrist
+from go.gotypes import Point, Player
 from scoring import compute_game_result
 
 

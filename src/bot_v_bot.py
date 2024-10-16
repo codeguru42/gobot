@@ -1,15 +1,14 @@
 import time
 
 from agents.minimax import MinimaxAgent, capture_diff
-from gobot import gotypes
-from gobot.goboard import Board, Move, GameState
-from gobot.gotypes import Player, Point
+from go.goboard import Move, Board, GameState
+from go.gotypes import Player, Point
 
 COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR: dict[Player, str] = {
     None: ".",
-    gotypes.Player.BLACK: "x",
-    gotypes.Player.WHITE: "o",
+    Player.BLACK: "x",
+    Player.WHITE: "o",
 }
 
 

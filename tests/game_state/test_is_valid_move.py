@@ -24,6 +24,13 @@ from test_minimax_agent import game_state
             Player.BLACK,
             Point(1, 1),
         ),
+        (
+            Path(__file__).parent / ".." / "board" / "board3.txt",
+            9,
+            9,
+            Player.BLACK,
+            Point(1, 1),
+        ),
     ],
 )
 def test_valid_move(

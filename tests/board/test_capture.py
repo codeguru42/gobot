@@ -26,6 +26,14 @@ from tests.board.conftest import board_expected
             Player.BLACK,
             Point(1, 1),
         ),
+        (
+            Path(__file__).parent / "board3.txt",
+            Path(__file__).parent / "board3-expected.txt",
+            9,
+            9,
+            Player.BLACK,
+            Point(1, 1),
+        ),
     ],
 )
 def test_capture(

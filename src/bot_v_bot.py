@@ -41,8 +41,6 @@ def main():
         Player.WHITE: MinimaxAgent(2, capture_diff),
     }
     while not game.is_over():
-        time.sleep(0.3)
-
         print(chr(27) + "[2J")
         print_board(game.board)
         bot_move = bots[game.next_player].select_move(game)

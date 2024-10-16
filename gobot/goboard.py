@@ -196,7 +196,7 @@ class GameState:
             return False
         return self.last_move.is_pass and second_last_move.is_pass
 
-    def is_move_self_capture(self, player, move) -> bool:
+    def is_move_self_capture(self, player: Player, move: Move) -> bool:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
@@ -204,7 +204,7 @@ class GameState:
         new_string = next_board.get_go_string(move.point)
         return new_string.num_liberties == 0
 
-    def does_move_violate_ko(self, player, move) -> bool:
+    def does_move_violate_ko(self, player: Player, move: Move) -> bool:
         if not move.is_play:
             return False
         next_board = copy.deepcopy(self.board)
@@ -212,7 +212,7 @@ class GameState:
         next_situation = (player.other, next_board.zobrist_hash())
         return next_situation in self.previous_states
 
-    def is_valid_move(self, move) -> bool:
+    def is_valid_move(self, move: Move) -> bool:
         if self.is_over():
             return False
         if move.is_pass or move.is_resign:

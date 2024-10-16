@@ -29,7 +29,7 @@ class MinimaxAgent(Agent):
         for possible_move in game_state.legal_moves():
             next_state = game_state.apply_move(possible_move)
             opponent_best_outcome = best_result(
-                next_state, self.max_depth, self.eval_fn
+                next_state, self.max_depth, MIN_SCORE, MAX_SCORE, self.eval_fn
             )
             our_best_outcome = -opponent_best_outcome
             if not best_moves or our_best_outcome > best_score:
@@ -41,7 +41,11 @@ class MinimaxAgent(Agent):
 
 
 def best_result(
-    game_state: GameState, max_depth: int, eval_fn: Callable[[GameState], int]
+    game_state: GameState,
+    max_depth: int,
+    best_black: int,
+    best_white: int,
+    eval_fn: Callable[[GameState], int],
 ) -> int:
     if game_state.is_over():
         if game_state.winner() == game_state.next_player:
@@ -55,10 +59,24 @@ def best_result(
     best_result_so_far = MIN_SCORE
     for candidate_move in game_state.legal_moves():
         next_state = game_state.apply_move(candidate_move)
-        opponent_best_result = best_result(next_state, max_depth - 1, eval_fn)
+        opponent_best_result = best_result(
+            next_state, max_depth - 1, best_black, best_white, eval_fn
+        )
         our_result = -opponent_best_result
         if our_result > best_result_so_far:
             best_result_so_far = our_result
+        if game_state.next_player == Player.WHITE:
+            if best_result_so_far > best_white:
+                best_white = best_result_so_far
+            outcome_for_black = -best_result_so_far
+            if outcome_for_black < best_black:
+                return best_result_so_far
+        elif game_state.next_player == Player.BLACK:
+            if best_result_so_far > best_black:
+                best_black = best_result_so_far
+            outcome_for_white = -best_result_so_far
+            if outcome_for_white < best_white:
+                return best_result_so_far
     return best_result_so_far
 
 

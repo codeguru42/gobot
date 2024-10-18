@@ -229,7 +229,7 @@ class GameState:
         yield Move.pass_turn()
         yield Move.resign()
 
-    def winner(self):
+    def winner(self) -> Optional[Player]:
         if not self.is_over():
             return None
         if self.last_move.is_resign:

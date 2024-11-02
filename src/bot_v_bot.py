@@ -1,6 +1,4 @@
-import time
-
-from agents.minimax import MinimaxAgent, capture_diff
+from agents.mcts_agent import MCTSAgent
 from go.goboard import Move, Board, GameState
 from go.gotypes import Player, Point
 
@@ -36,9 +34,11 @@ def print_board(board: Board):
 def main():
     board_size = 9
     game = GameState.new_game(board_size)
+    num_rounds = 5
+    temperature = 1.5
     bots = {
-        Player.BLACK: MinimaxAgent(2, capture_diff),
-        Player.WHITE: MinimaxAgent(2, capture_diff),
+        Player.BLACK: MCTSAgent(num_rounds, temperature),
+        Player.WHITE: MCTSAgent(num_rounds, temperature),
     }
     while not game.is_over():
         print(chr(27) + "[2J")

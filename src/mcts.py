@@ -12,7 +12,7 @@ class MCTSNode:
         self.move = move
         self.win_counts = {Player.BLACK: 0, Player.WHITE: 0}
         self.num_rollouts = 0
-        self.children = []
+        self.children: list[MCTSNode] = []
         self.unvisited_moves = list(game_state.legal_moves())
 
     def add_random_child(self) -> Self:

@@ -44,7 +44,7 @@ class MCTSAgent(Agent):
         best_move = None
         best_pct = -1.0
         for child in root.children:
-            child_pct = child.winning_pct(game_state.next_player)
+            child_pct = child.winning_frac(game_state.next_player)
             if child_pct > best_pct:
                 best_pct = child_pct
                 best_move = child.move
@@ -58,7 +58,7 @@ class MCTSAgent(Agent):
             score = uct_score(
                 total_rollouts,
                 child.num_rollouts,
-                child.winning_pct(node.game_state.next_player),
+                child.winning_frac(node.game_state.next_player),
                 self.temperature,
             )
             if score > best_score:

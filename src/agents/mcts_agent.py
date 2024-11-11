@@ -30,16 +30,16 @@ class MCTSAgent(Agent):
         for i in range(self.num_rounds):
             node = root
             while not node.can_add_child() and not node.is_terminal():
-                node = self.select_child(game_state)
+                node = self.select_child(node)
 
-                if node.can_add_child():
-                    node = node.add_random_child()
+            if node.can_add_child():
+                node = node.add_random_child()
 
-                winner = self.simulate_random_game(node.game_state)
+            winner = self.simulate_random_game(node.game_state)
 
-                while node is not None:
-                    node.record_win(winner)
-                    node = node.parent
+            while node is not None:
+                node.record_win(winner)
+                node = node.parent
 
         best_move = None
         best_pct = -1.0

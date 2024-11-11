@@ -16,7 +16,7 @@ class MCTSNode:
         self.unvisited_moves = list(game_state.legal_moves())
 
     def add_random_child(self) -> Self:
-        index = random.randint(0, len(self.children) - 1)
+        index = random.randint(0, len(self.unvisited_moves) - 1)
         new_move = self.unvisited_moves.pop(index)
         new_game_state = self.game_state.apply_move(new_move)
         new_node = MCTSNode(new_game_state, self, new_move)

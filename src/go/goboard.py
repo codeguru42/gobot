@@ -168,6 +168,9 @@ class GameState:
             )
         self.last_move = move
 
+    def __eq__(self, other):
+        return self.board == other.board and self.next_player == other.next_player
+
     def apply_move(self, move: Move) -> Self:
         if move.is_play:
             next_board = copy.deepcopy(self.board)

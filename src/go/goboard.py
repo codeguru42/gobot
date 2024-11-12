@@ -80,8 +80,8 @@ class Board:
         self._grid: dict[Point, Optional[GoString]] = {}
         self._hash = zobrist.EMPTY_BOARD
 
-    def __eq__(self, __value):
-        return isinstance(__value, Board) and self._hash == __value._hash
+    def __eq__(self, other):
+        return isinstance(other, Board) and self._hash == other._hash
 
     def is_on_grid(self, point: Point) -> bool:
         return 1 <= point.row <= self.num_rows and 1 <= point.col <= self.num_cols
@@ -169,7 +169,11 @@ class GameState:
         self.last_move = move
 
     def __eq__(self, other):
-        return self.board == other.board and self.next_player == other.next_player
+        return (
+            isinstance(other, GameState)
+            and self.board == other.board
+            and self.next_player == other.next_player
+        )
 
     def apply_move(self, move: Move) -> Self:
         if move.is_play:

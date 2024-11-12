@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from go.goboard import GameState
+from go.goboard import GameState, Move
 from go.gotypes import Player, Point
 from test_minimax_agent import game_state
 
@@ -11,21 +11,21 @@ from test_minimax_agent import game_state
     "filename,num_rows,num_cols,next_player,point",
     [
         (
-            Path(__file__).parent / ".." / "board" / "board1.txt",
+            Path(__file__).parent.parent / "data" / "board1.txt",
             9,
             9,
             Player.BLACK,
             Point(4, 6),
         ),
         (
-            Path(__file__).parent / ".." / "board" / "board2.txt",
+            Path(__file__).parent.parent / "data" / "board2.txt",
             9,
             9,
             Player.BLACK,
             Point(1, 1),
         ),
         (
-            Path(__file__).parent / ".." / "board" / "board3.txt",
+            Path(__file__).parent.parent / "data" / "board3.txt",
             9,
             9,
             Player.BLACK,

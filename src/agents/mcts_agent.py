@@ -26,7 +26,10 @@ class MCTSAgent(Agent):
 
     def select_move(self, game_state: GameState) -> Move:
         root = MCTSNode(game_state)
+        self.perform_rollouts(root)
+        return self.get_best_move(game_state.next_player, root)
 
+    def perform_rollouts(self, root):
         for i in range(self.num_rounds):
             node = root
             while not node.can_add_child() and not node.is_terminal():
@@ -41,10 +44,11 @@ class MCTSAgent(Agent):
                 node.record_win(winner)
                 node = node.parent
 
+    def get_best_move(self, player, root):
         best_move = None
         best_pct = -1.0
         for child in root.children:
-            child_pct = child.winning_frac(game_state.next_player)
+            child_pct = child.winning_frac(player)
             if child_pct > best_pct:
                 best_pct = child_pct
                 best_move = child.move

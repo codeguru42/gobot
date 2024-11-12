@@ -1,7 +1,12 @@
 import pytest
 
-from go.goboard import Board
+from go.goboard import Board, GameState
 from go.gotypes import Player, Point
+
+
+@pytest.fixture
+def game_state(board: Board, next_player: Player) -> GameState:
+    return GameState(board, next_player)
 
 
 @pytest.fixture

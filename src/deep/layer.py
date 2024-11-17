@@ -92,7 +92,7 @@ class DenseLayer(Layer):
     def update_params(self, learning_rate):
         self.weight -= learning_rate * self.delta_w
         self.bias -= learning_rate * self.delta_b
-        
+
     def clear_deltas(self):
         self.delta_w = np.zeros(self.weight.shape)
         self.delta_b = np.zeros(self.bias.shape)
@@ -100,5 +100,3 @@ class DenseLayer(Layer):
     def describe(self):
         print(f"|-- {self.__class__.__name__}")
         print(f"  |-- dimensions: ({self.input_dim},{self.output_dim})")
-        
-        

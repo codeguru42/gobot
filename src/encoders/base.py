@@ -1,3 +1,5 @@
+import importlib
+
 from go.goboard import GameState
 from go.gotypes import Point
 
@@ -20,3 +22,11 @@ class Encoder:
 
     def shape(self):
         raise NotImplementedError()
+
+
+def get_encoder_by_name(name: str, board_size: int | tuple[int, int]) -> Encoder:
+    if isinstance(board_size, int):
+        board_size = (board_size, board_size)
+    module = importlib.import_module("encoders." + name)
+    constructor = getattr(module, "create")
+    return constructor(board_size)

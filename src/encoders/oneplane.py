@@ -41,3 +41,7 @@ class OnePlaneEncoder(Encoder):
 
     def shape(self) -> tuple[int, int, int]:
         return self.num_planes, self.board_width, self.board_height
+
+
+def create(board_size: int | tuple[int, int]) -> OnePlaneEncoder:
+    return OnePlaneEncoder(board_size)

@@ -1,5 +1,6 @@
 import numpy as np
 import typer
+from typing_extensions import Annotated
 
 from agents.mcts_agent import MCTSAgent
 from bot_v_bot import print_board, print_move
@@ -33,11 +34,11 @@ def generate_game(board_size: int, rounds: int, max_moves: int, temperature: flo
 def main(
     board_out: str,
     move_out: str,
-    board_size: int = 9,
-    rounds: int = 1000,
-    temperature: float = 0.8,
-    max_moves: int = 60,
-    num_games: int = 10,
+    board_size: Annotated[int, typer.Option("-b")] = 9,
+    rounds: Annotated[int, typer.Option("-r")] = 1000,
+    temperature: Annotated[float, typer.Option("-t")] = 0.8,
+    max_moves: Annotated[int, typer.Option("-m")] = 60,
+    num_games: Annotated[int, typer.Option("-n")] = 10,
 ):
     xs = []
     ys = []

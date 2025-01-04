@@ -8,8 +8,9 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.12"
 black = "^24.8.0"
-numpy = "^2.2.1"
+numpy = "^2.0.2"
 typer = "^0.15.1"
+tensorflow = "^2.18.0"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -35,6 +35,28 @@ def main(features: str, labels: str, seed: Annotated[int, typer.Option("-s")] = 
     score = model.evaluate(x_test, y_test, verbose=0)
     print('Test loss:', score[0])
     print('Test accuracy:', score[1])
+    
+    
+    test_board = np.array([[
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+        0, 1, -1,  1, -1, 0, 0, 0, 0,
+        0, 1, -1,  1, -1, 0, 0, 0, 0,
+        0, 0,  1, -1,  0, 0, 0, 0, 0,
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+        0, 0,  0,  0,  0, 0, 0, 0, 0,
+    ]])
+    
+    move_probs = model.predict(test_board)[0]
+    i = 0
+    for row in range(9):
+        row_formatted = []
+        for col in range(9):
+            row_formatted.append(f'{move_probs[i]:.3f}')
+            i += 1
+        print(' '.join(row_formatted))
 
 
 if __name__ == "__main__":

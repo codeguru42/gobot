@@ -22,6 +22,7 @@ def tar_links(url: str):
     soup = BeautifulSoup(response.text, "html.parser")
     links = soup.find_all("a")
     for link in links:
+        typer.echo(link)
         href = link.get("href")
         if href.endswith(".tar.gz"):
             yield href

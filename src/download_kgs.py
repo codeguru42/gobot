@@ -3,6 +3,7 @@ from pathlib import Path
 import httpx
 import typer
 from bs4 import BeautifulSoup
+from furl import furl
 
 kgs_url = "https://www.u-go.net/gamerecords/"
 
@@ -11,7 +12,8 @@ def main(output_dir: Path):
     output_dir.mkdir(parents=True, exist_ok=True)
     for link in tar_links(kgs_url):
         response = httpx.get(link)
-        with open(output_dir / link.split("/")[-1], "wb") as f:
+        parsed_link = furl(link)
+        with open(output_dir / parsed_link.path.segments[-1], "wb") as f:
             f.write(response.content)
 
 

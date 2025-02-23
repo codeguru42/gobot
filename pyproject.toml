@@ -14,6 +14,7 @@ tensorflow = "^2.18.0"
 keras = "^3.7.0"
 beautifulsoup4 = "^4.13.3"
 httpx = "^0.28.1"
+furl = "^2.1.3"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 
 kgs_url = "https://www.u-go.net/gamerecords/"
 
+
 def main(output_dir: Path):
     output_dir.mkdir(parents=True, exist_ok=True)
     for link in tar_links(kgs_url):
@@ -24,5 +25,5 @@ def tar_links(url: str):
             yield href
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     typer.run(main)

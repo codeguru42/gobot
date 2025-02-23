@@ -1,12 +1,17 @@
+from pathlib import Path
+
 import httpx
 import typer
 from bs4 import BeautifulSoup
 
 kgs_url = "https://www.u-go.net/gamerecords/"
 
-def main():
+def main(output_dir: Path):
+    output_dir.mkdir(parents=True, exist_ok=True)
     for link in tar_links(kgs_url):
-        typer.echo(link)
+        response = httpx.get(link)
+        with open(output_dir / link.split("/")[-1], "wb") as f:
+            f.write(response.content)
 
 
 def tar_links(url: str):

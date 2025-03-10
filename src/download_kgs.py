@@ -22,10 +22,13 @@ def tar_links(url: str):
     soup = BeautifulSoup(response.text, "html.parser")
     links = soup.find_all("a")
     for link in links:
-        typer.echo(link)
         href = link.get("href")
+        typer.echo(f"Link found: {href}", nl=False)
         if href.endswith(".tar.gz"):
+            typer.echo(" ...downloading")
             yield href
+        else:
+            typer.echo(" ...skipping")
 
 
 if __name__ == "__main__":

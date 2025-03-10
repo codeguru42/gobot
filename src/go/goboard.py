@@ -4,7 +4,7 @@ from typing import Self, Iterable, Optional, Tuple, Union, Generator
 
 from go import zobrist
 from go.gotypes import Point, Player
-from scoring import compute_game_result
+from go.scoring import compute_game_result
 
 
 @dataclass

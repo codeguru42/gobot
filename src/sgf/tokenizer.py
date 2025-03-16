@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
+from typing import Iterable
 
 
 class TokenType(Enum):
@@ -27,7 +28,7 @@ class Token:
     token: str
 
 
-def tokens(input_stream):
+def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
     for c in input_stream:
         match c:
             case "(":

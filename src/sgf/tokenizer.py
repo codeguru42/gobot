@@ -99,6 +99,9 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                 case ":":
                     yield Token(TokenType.COLON, c)
                     c = next(input_iter)
+                case "B" | "W":
+                    yield Token(TokenType.COLOR, c)
+                    c = next(input_iter)
                 case _:
                     if c.isspace():
                         c = next(input_iter)

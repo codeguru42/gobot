@@ -43,14 +43,23 @@ def parse_ident(c: str, input_stream: Iterator[str]) -> tuple[Token, str]:
 
 
 def parse_number(c, input_iter):
+    token_type = TokenType.NUMBER
     token = [c]
     next_c = next(input_iter)
     try:
         while next_c.isdigit():
             token.append(next_c)
             next_c = next(input_iter)
+            
+        if next_c == '.':
+            token_type = TokenType.REAL
+            token.append(next_c)
+            next_c = next(input_iter)
+            while next_c.isdigit():
+                token.append(next_c)
+                next_c = next(input_iter)
     finally:
-        return Token(TokenType.NUMBER, "".join(token)), next_c
+        return Token(token_type, "".join(token)), next_c
 
 
 def tokens(input_stream: Iterable[str]) -> Iterable[Token]:

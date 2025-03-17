@@ -17,6 +17,7 @@ from sgf.tokenizer import Token, TokenType, tokens
         ("123", (Token(TokenType.NUMBER, "123"), Token(TokenType.EOF, ""))),
         ("+123", (Token(TokenType.NUMBER, "+123"), Token(TokenType.EOF, ""))),
         ("-123", (Token(TokenType.NUMBER, "-123"), Token(TokenType.EOF, ""))),
+        ("-12.3", (Token(TokenType.REAL, "-12.3"), Token(TokenType.EOF, ""))),
     ],
 )
 def test_tokenizer(input_string: str, expected_tokens: tuple[Token]):

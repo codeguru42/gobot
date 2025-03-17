@@ -12,6 +12,7 @@ from sgf.tokenizer import Token, TokenType, tokens
         ("]", Token(TokenType.R_BRACKET, "]")),
         (";", Token(TokenType.SEMI, ";")),
         (":", Token(TokenType.COLON, ":")),
+        ("FOOBAR", Token(TokenType.IDENT, "FOOBAR")),
     ],
 )
 def test_tokenizer(input_string: str, expected_token: Token):

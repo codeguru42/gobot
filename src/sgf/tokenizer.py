@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Iterable, Iterator, Tuple
+from typing import Iterable, Iterator
 
 
 class TokenType(Enum):
@@ -22,6 +22,7 @@ class TokenType(Enum):
     STONE = "STONE"
     IDENT = "IDENT"
     UNKNOWN = "UNKNOWN"
+    EOF = None
 
 
 @dataclass
@@ -30,7 +31,7 @@ class Token:
     token: str
 
 
-def parse_ident(c: str, input_stream: Iterator[str]) -> Tuple[Token, str]:
+def parse_ident(c: str, input_stream: Iterator[str]) -> tuple[Token, str]:
     token = [c]
     next_c = next(input_stream)
     try:
@@ -74,4 +75,4 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                         yield Token(TokenType.UNKNOWN, c)
                         c = next(input_iter)
     except StopIteration:
-        pass
+        yield Token(TokenType.EOF, "")

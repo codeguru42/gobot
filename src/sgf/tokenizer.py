@@ -71,6 +71,8 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                         token, next_c = parse_ident(c, input_iter)
                         yield token
                         c = next_c
+                    elif c.isspace():
+                        c = next(input_iter)
                     else:
                         yield Token(TokenType.UNKNOWN, c)
                         c = next(input_iter)

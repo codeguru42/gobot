@@ -31,13 +31,13 @@ class Token:
     token: str
 
 
-def parse_ident(c: str, input_stream: Iterator[str]) -> tuple[Token, str]:
+def parse_ident(c: str, input_iter: Iterator[str]) -> tuple[Token, str]:
     token = [c]
-    next_c = next(input_stream)
+    next_c = next(input_iter)
     try:
         while next_c.isupper():
             token.append(next_c)
-            next_c = next(input_stream)
+            next_c = next(input_iter)
     finally:
         return Token(TokenType.IDENT, "".join(token)), next_c
 
@@ -62,12 +62,25 @@ def parse_number(c, input_iter):
         return Token(token_type, "".join(token)), next_c
 
 
+def parse_point(c, input_iter):
+    next_c = next(input_iter)
+    if next_c.islower():
+        token = c + next_c
+        try:
+            next_c = next(input_iter)
+        except StopIteration:
+            next_c = None
+        return Token(TokenType.POINT, token), next_c 
+
+
 def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
     input_iter = iter(input_stream)
     c = next(input_iter)
     try:
         while True:
             match c:
+                case None:
+                    raise StopIteration
                 case "(":
                     yield Token(TokenType.L_PAREN, c)
                     c = next(input_iter)
@@ -91,6 +104,10 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                         c = next(input_iter)
                     elif c.isupper():
                         token, next_c = parse_ident(c, input_iter)
+                        yield token
+                        c = next_c
+                    elif c.islower():
+                        token, next_c = parse_point(c, input_iter)
                         yield token
                         c = next_c
                     elif c == '+' or c == '-' or c.isdigit():

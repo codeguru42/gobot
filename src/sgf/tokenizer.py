@@ -42,6 +42,17 @@ def parse_ident(c: str, input_stream: Iterator[str]) -> tuple[Token, str]:
         return Token(TokenType.IDENT, "".join(token)), next_c
 
 
+def parse_number(c, input_iter):
+    token = [c]
+    next_c = next(input_iter)
+    try:
+        while next_c.isdigit():
+            token.append(next_c)
+            next_c = next(input_iter)
+    finally:
+        return Token(TokenType.NUMBER, "".join(token)), next_c
+
+
 def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
     input_iter = iter(input_stream)
     c = next(input_iter)
@@ -67,12 +78,16 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                     yield Token(TokenType.COLON, c)
                     c = next(input_iter)
                 case _:
-                    if c.isupper():
+                    if c.isspace():
+                        c = next(input_iter)
+                    elif c.isupper():
                         token, next_c = parse_ident(c, input_iter)
                         yield token
                         c = next_c
-                    elif c.isspace():
-                        c = next(input_iter)
+                    elif c == '+' or c == '-' or c.isdigit():
+                        token, next_c = parse_number(c, input_iter)
+                        yield token
+                        c = next_c
                     else:
                         yield Token(TokenType.UNKNOWN, c)
                         c = next(input_iter)

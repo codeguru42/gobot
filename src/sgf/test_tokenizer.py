@@ -14,6 +14,9 @@ from sgf.tokenizer import Token, TokenType, tokens
         (":", (Token(TokenType.COLON, ":"), Token(TokenType.EOF, ""))),
         ("FOOBAR", (Token(TokenType.IDENT, "FOOBAR"), Token(TokenType.EOF, ""))),
         ("( )", (Token(TokenType.L_PAREN, "("), Token(TokenType.R_PAREN, ")"), Token(TokenType.EOF, ""))),
+        ("123", (Token(TokenType.NUMBER, "123"), Token(TokenType.EOF, ""))),
+        ("+123", (Token(TokenType.NUMBER, "+123"), Token(TokenType.EOF, ""))),
+        ("-123", (Token(TokenType.NUMBER, "-123"), Token(TokenType.EOF, ""))),
     ],
 )
 def test_tokenizer(input_string: str, expected_tokens: tuple[Token]):

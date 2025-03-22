@@ -23,7 +23,7 @@ class TokenType(Enum):
     STONE = "STONE"
     IDENT = "IDENT"
     UNKNOWN = "UNKNOWN"
-    EOF = None
+    EOF = "EOF"
 
 
 @dataclass

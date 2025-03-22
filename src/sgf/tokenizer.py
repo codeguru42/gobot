@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from enum import Enum
 from typing import Iterable, Iterator
@@ -50,8 +51,8 @@ def parse_number(c, input_iter):
         while next_c.isdigit():
             token.append(next_c)
             next_c = next(input_iter)
-            
-        if next_c == '.':
+
+        if next_c == ".":
             token_type = TokenType.REAL
             token.append(next_c)
             next_c = next(input_iter)
@@ -62,15 +63,29 @@ def parse_number(c, input_iter):
         return Token(token_type, "".join(token)), next_c
 
 
-def parse_point(c, input_iter):
-    next_c = next(input_iter)
-    if next_c.islower():
-        token = c + next_c
-        try:
-            next_c = next(input_iter)
-        except StopIteration:
-            next_c = None
-        return Token(TokenType.POINT, token), next_c 
+def parse_value(c, input_iter):
+    token_chars = []
+    while c != "]":
+        token_chars.append(c)
+        c = next(input_iter)
+
+    token_str = "".join(token_chars)
+    re_number = r"[+-]?\d+"
+    re_real = r"[+-]?\d+(\.\d+)?"
+    match token_str:
+        case "":
+            return Token(TokenType.NONE, token_str), c
+        case "B" | "W":
+            return Token(TokenType.COLOR, token_str), c
+        case _:
+            if re.fullmatch(re_number, token_str):
+                return Token(TokenType.NUMBER, token_str), c
+            if re.fullmatch(re_real, token_str):
+                return Token(TokenType.REAL, token_str), c
+            if token_str.islower() and len(token_str) == 2:
+                return Token(TokenType.POINT, token_str), c
+
+            return Token(TokenType.TEXT, token_str), c
 
 
 def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
@@ -90,6 +105,9 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                 case "[":
                     yield Token(TokenType.L_BRACKET, c)
                     c = next(input_iter)
+                    value, next_c = parse_value(c, input_iter)
+                    yield value
+                    c = next_c
                 case "]":
                     yield Token(TokenType.R_BRACKET, c)
                     c = next(input_iter)
@@ -99,22 +117,11 @@ def tokens(input_stream: Iterable[str]) -> Iterable[Token]:
                 case ":":
                     yield Token(TokenType.COLON, c)
                     c = next(input_iter)
-                case "B" | "W":
-                    yield Token(TokenType.COLOR, c)
-                    c = next(input_iter)
                 case _:
                     if c.isspace():
                         c = next(input_iter)
                     elif c.isupper():
                         token, next_c = parse_ident(c, input_iter)
-                        yield token
-                        c = next_c
-                    elif c.islower():
-                        token, next_c = parse_point(c, input_iter)
-                        yield token
-                        c = next_c
-                    elif c == '+' or c == '-' or c.isdigit():
-                        token, next_c = parse_number(c, input_iter)
                         yield token
                         c = next_c
                     else:

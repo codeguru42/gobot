@@ -75,7 +75,7 @@ def parse_node(token: Token, token_iter: Iterator[Token]) -> tuple[Node, Token]:
 def parse_sequence(token: Token, token_iter: Iterator[Token]) -> tuple[Sequence, Token]:
     nodes = []
     next_token = token
-    while next_token.type != TokenType.SEMI:
+    while next_token.type == TokenType.SEMI:
         node, next_token = parse_node(token, token_iter)
         nodes.append(node)
     return Sequence(nodes), next_token

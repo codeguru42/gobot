@@ -58,31 +58,31 @@ from sgf.tokenizer import Token, TokenType, tokens
             ),
         ),
         (
-                "[ab]",
-                (
-                        Token(TokenType.L_BRACKET, "["),
-                        Token(TokenType.POINT, "ab"),
-                        Token(TokenType.R_BRACKET, "]"),
-                        Token(TokenType.EOF, ""),
-                ),
+            "[ab]",
+            (
+                Token(TokenType.L_BRACKET, "["),
+                Token(TokenType.POINT, "ab"),
+                Token(TokenType.R_BRACKET, "]"),
+                Token(TokenType.EOF, ""),
+            ),
         ),
         (
-                "[B]",
-                (
-                        Token(TokenType.L_BRACKET, "["),
-                        Token(TokenType.COLOR, "B"),
-                        Token(TokenType.R_BRACKET, "]"),
-                        Token(TokenType.EOF, ""),
-                ),
+            "[B]",
+            (
+                Token(TokenType.L_BRACKET, "["),
+                Token(TokenType.COLOR, "B"),
+                Token(TokenType.R_BRACKET, "]"),
+                Token(TokenType.EOF, ""),
+            ),
         ),
         (
-                "[W]",
-                (
-                        Token(TokenType.L_BRACKET, "["),
-                        Token(TokenType.COLOR, "W"),
-                        Token(TokenType.R_BRACKET, "]"),
-                        Token(TokenType.EOF, ""),
-                ),
+            "[W]",
+            (
+                Token(TokenType.L_BRACKET, "["),
+                Token(TokenType.COLOR, "W"),
+                Token(TokenType.R_BRACKET, "]"),
+                Token(TokenType.EOF, ""),
+            ),
         ),
     ],
 )

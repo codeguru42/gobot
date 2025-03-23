@@ -50,10 +50,10 @@ class SequentialNetwork:
 
     def update(self, mini_batch, learning_rate):
         learning_rate = learning_rate / len(mini_batch)
-        
+
         for layer in self.layers:
             layer.update_params(learning_rate)
-            
+
         for layer in self.layers:
             layer.clear_deltas()
 
@@ -62,11 +62,13 @@ class SequentialNetwork:
             self.layers[0].input_data = x
             for layer in self.layers:
                 layer.forward()
-                
-            self.layers[-1].input_delta = self.loss.loss_derivative(self.layers[-1].output_data, y)
+
+            self.layers[-1].input_delta = self.loss.loss_derivative(
+                self.layers[-1].output_data, y
+            )
             for layer in reversed(self.layers):
                 layer.backward()
-                
+
     def single_forward(self, x: np.array) -> np.array:
         self.layers[0].input_data = x
         for layer in self.layers:
@@ -74,5 +76,7 @@ class SequentialNetwork:
         return self.layers[-1].output_data
 
     def evaluate(self, test_data):
-        test_results = [(np.argmax(self.single_forward(x)), np.argmax(y)) for x, y in test_data]
-        return sum(int(x==y) for x, y in test_results)
+        test_results = [
+            (np.argmax(self.single_forward(x)), np.argmax(y)) for x, y in test_data
+        ]
+        return sum(int(x == y) for x, y in test_results)

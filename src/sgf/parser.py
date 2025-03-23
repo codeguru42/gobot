@@ -46,7 +46,9 @@ def parse_prop_value(token: Token, token_iter: Iterator[Token]) -> tuple[Token, 
     raise UnexpectedTokenException(next_token)
 
 
-def parse_prop_values(token: Token, token_iter: Iterator[Token]) -> tuple[list[Token], Token]:
+def parse_prop_values(
+    token: Token, token_iter: Iterator[Token]
+) -> tuple[list[Token], Token]:
     values = []
     next_token = token
     while next_token.type == TokenType.L_BRACKET:

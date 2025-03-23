@@ -41,7 +41,7 @@ def parse_prop_value(token: Token, token_iter: Iterator[Token]) -> tuple[Token, 
     if next_token.type == TokenType.L_BRACKET:
         value = next(token_iter)
         next_token = next(token_iter)
-        if next_token == TokenType.R_BRACKET:
+        if next_token.type == TokenType.R_BRACKET:
             return value, next(token_iter)
     raise UnexpectedTokenException(next_token)
 

@@ -7,7 +7,10 @@ from sgf.parser import (
     Property,
     Node,
     parse_node,
-    Sequence, parse_sequence,
+    Sequence,
+    parse_sequence,
+    GameTree,
+    parse_game_tree,
 )
 from sgf.tokenizer import tokens, TokenType, Token
 
@@ -67,5 +70,69 @@ def test_parse_sequence():
         ]
     )
     node, next_token = parse_sequence(next(token_iter), token_iter)
+    assert node == expected
+    assert next_token == Token(TokenType.EOF, "")
+
+
+@pytest.mark.parametrize(
+    "input_string,expected",
+    (
+        (
+            "(;B[dd];W[jj])",
+            GameTree(
+                Sequence(
+                    [
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "B"),
+                                [Token(TokenType.POINT, "dd")],
+                            )
+                        ),
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "W"),
+                                [Token(TokenType.POINT, "jj")],
+                            )
+                        ),
+                    ]
+                ),
+                [],
+            ),
+        ),
+        (
+            "(;B[dd](;B[jj]))",
+            GameTree(
+                Sequence(
+                    [
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "B"),
+                                [Token(TokenType.POINT, "dd")],
+                            )
+                        ),
+                    ]
+                ),
+                [
+                    GameTree(
+                        Sequence(
+                            [
+                                Node(
+                                    Property(
+                                        Token(TokenType.IDENT, "B"),
+                                        [Token(TokenType.POINT, "jj")],
+                                    )
+                                ),
+                            ]
+                        ),
+                        [],
+                    )
+                ],
+            ),
+        ),
+    ),
+)
+def test_parse_game_tree(input_string, expected):
+    token_iter = iter(tokens(input_string))
+    node, next_token = parse_game_tree(next(token_iter), token_iter)
     assert node == expected
     assert next_token == Token(TokenType.EOF, "")

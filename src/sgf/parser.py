@@ -23,7 +23,7 @@ class Sequence:
 @dataclass
 class GameTree:
     mainline: Sequence
-    variation: "GameTree"
+    variations: list["GameTree"]
 
 
 @dataclass
@@ -81,13 +81,23 @@ def parse_sequence(token: Token, token_iter: Iterator[Token]) -> tuple[Sequence,
     return Sequence(nodes), next_token
 
 
+def parse_game_trees(token: Token, token_iter: Iterator[Token]) -> tuple[list[GameTree], Token]:
+    game_trees = []
+    next_token = token
+    while next_token.type == TokenType.L_PAREN:
+        game_tree, next_token = parse_game_tree(token, token_iter)
+        game_trees.append(game_tree)
+    return game_trees, next_token
+
+
 def parse_game_tree(
     token: Token, token_iter: Iterator[Token]
 ) -> tuple[GameTree, Token]:
     if token.type == TokenType.L_PAREN:
         seq, next_token = parse_sequence(next(token_iter), token_iter)
-        game_tree, next_token = parse_game_tree(next_token, token_iter)
-        return GameTree(seq, game_tree), next_token
+        game_trees, next_token = parse_game_trees(next_token, token_iter)
+        if next_token.type == TokenType.R_PAREN:
+            return GameTree(seq, game_trees), next(token_iter)
     raise UnexpectedTokenException(token)
 
 

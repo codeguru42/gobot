@@ -11,6 +11,8 @@ from sgf.parser import (
     parse_sequence,
     GameTree,
     parse_game_tree,
+    parse_collection,
+    Collection,
 )
 from sgf.tokenizer import tokens, TokenType, Token
 
@@ -56,8 +58,8 @@ def test_parse_property():
 )
 def test_parse_node(input_string, expected):
     token_iter = iter(tokens(input_string))
-    prop, next_token = parse_node(next(token_iter), token_iter)
-    assert prop == expected
+    node, next_token = parse_node(next(token_iter), token_iter)
+    assert node == expected
     assert next_token == Token(TokenType.EOF, "")
 
 
@@ -69,8 +71,8 @@ def test_parse_sequence():
             Node(Property(Token(TokenType.IDENT, "W"), [Token(TokenType.POINT, "jj")])),
         ]
     )
-    node, next_token = parse_sequence(next(token_iter), token_iter)
-    assert node == expected
+    sequence, next_token = parse_sequence(next(token_iter), token_iter)
+    assert sequence == expected
     assert next_token == Token(TokenType.EOF, "")
 
 
@@ -133,6 +135,54 @@ def test_parse_sequence():
 )
 def test_parse_game_tree(input_string, expected):
     token_iter = iter(tokens(input_string))
-    node, next_token = parse_game_tree(next(token_iter), token_iter)
-    assert node == expected
+    game_tree, next_token = parse_game_tree(next(token_iter), token_iter)
+    assert game_tree == expected
     assert next_token == Token(TokenType.EOF, "")
+
+
+def test_parse_collection():
+    token_iter = iter(tokens("(;B[dd];W[pp])(;B[pd];W[dp])"))
+    expected = Collection(
+        [
+            GameTree(
+                Sequence(
+                    [
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "B"),
+                                [Token(TokenType.POINT, "dd")],
+                            )
+                        ),
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "W"),
+                                [Token(TokenType.POINT, "pp")],
+                            )
+                        ),
+                    ]
+                ),
+                [],
+            ),
+            GameTree(
+                Sequence(
+                    [
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "B"),
+                                [Token(TokenType.POINT, "pd")],
+                            )
+                        ),
+                        Node(
+                            Property(
+                                Token(TokenType.IDENT, "W"),
+                                [Token(TokenType.POINT, "dp")],
+                            )
+                        ),
+                    ]
+                ),
+                [],
+            ),
+        ]
+    )
+    collection = parse_collection(next(token_iter), token_iter)
+    assert collection == expected

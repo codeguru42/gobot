@@ -50,22 +50,26 @@ def test_parse_property():
         (
             ";B[dd]",
             Node(
-                Property(
-                    Token(TokenType.IDENT, "B", line_number=1),
-                    [Token(TokenType.POINT, "dd", line_number=1)],
-                )
+                [
+                    Property(
+                        Token(TokenType.IDENT, "B", line_number=1),
+                        [Token(TokenType.POINT, "dd", line_number=1)],
+                    )
+                ]
             ),
         ),
         (
             ";AB[dd][jj]",
             Node(
-                Property(
-                    Token(TokenType.IDENT, "AB", line_number=1),
-                    [
-                        Token(TokenType.POINT, "dd", line_number=1),
-                        Token(TokenType.POINT, "jj", line_number=1),
-                    ],
-                )
+                [
+                    Property(
+                        Token(TokenType.IDENT, "AB", line_number=1),
+                        [
+                            Token(TokenType.POINT, "dd", line_number=1),
+                            Token(TokenType.POINT, "jj", line_number=1),
+                        ],
+                    )
+                ]
             ),
         ),
         (
@@ -97,16 +101,20 @@ def test_parse_sequence():
     expected = Sequence(
         [
             Node(
-                Property(
-                    Token(TokenType.IDENT, "B", line_number=1),
-                    [Token(TokenType.POINT, "dd", line_number=1)],
-                )
+                [
+                    Property(
+                        Token(TokenType.IDENT, "B", line_number=1),
+                        [Token(TokenType.POINT, "dd", line_number=1)],
+                    )
+                ]
             ),
             Node(
-                Property(
-                    Token(TokenType.IDENT, "W", line_number=1),
-                    [Token(TokenType.POINT, "jj", line_number=1)],
-                )
+                [
+                    Property(
+                        Token(TokenType.IDENT, "W", line_number=1),
+                        [Token(TokenType.POINT, "jj", line_number=1)],
+                    )
+                ]
             ),
         ]
     )
@@ -124,16 +132,20 @@ def test_parse_sequence():
                 Sequence(
                     [
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "B", line_number=1),
-                                [Token(TokenType.POINT, "dd", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "B", line_number=1),
+                                    [Token(TokenType.POINT, "dd", line_number=1)],
+                                )
+                            ]
                         ),
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "W", line_number=1),
-                                [Token(TokenType.POINT, "jj", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "W", line_number=1),
+                                    [Token(TokenType.POINT, "jj", line_number=1)],
+                                )
+                            ]
                         ),
                     ]
                 ),
@@ -146,10 +158,12 @@ def test_parse_sequence():
                 Sequence(
                     [
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "B", line_number=1),
-                                [Token(TokenType.POINT, "dd", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "B", line_number=1),
+                                    [Token(TokenType.POINT, "dd", line_number=1)],
+                                )
+                            ]
                         ),
                     ]
                 ),
@@ -158,10 +172,16 @@ def test_parse_sequence():
                         Sequence(
                             [
                                 Node(
-                                    Property(
-                                        Token(TokenType.IDENT, "B", line_number=1),
-                                        [Token(TokenType.POINT, "jj", line_number=1)],
-                                    )
+                                    [
+                                        Property(
+                                            Token(TokenType.IDENT, "B", line_number=1),
+                                            [
+                                                Token(
+                                                    TokenType.POINT, "jj", line_number=1
+                                                )
+                                            ],
+                                        )
+                                    ]
                                 ),
                             ]
                         ),
@@ -187,16 +207,20 @@ def test_parse_collection():
                 Sequence(
                     [
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "B", line_number=1),
-                                [Token(TokenType.POINT, "dd", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "B", line_number=1),
+                                    [Token(TokenType.POINT, "dd", line_number=1)],
+                                )
+                            ]
                         ),
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "W", line_number=1),
-                                [Token(TokenType.POINT, "pp", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "W", line_number=1),
+                                    [Token(TokenType.POINT, "pp", line_number=1)],
+                                )
+                            ]
                         ),
                     ]
                 ),
@@ -206,16 +230,20 @@ def test_parse_collection():
                 Sequence(
                     [
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "B", line_number=1),
-                                [Token(TokenType.POINT, "pd", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "B", line_number=1),
+                                    [Token(TokenType.POINT, "pd", line_number=1)],
+                                )
+                            ]
                         ),
                         Node(
-                            Property(
-                                Token(TokenType.IDENT, "W", line_number=1),
-                                [Token(TokenType.POINT, "dp", line_number=1)],
-                            )
+                            [
+                                Property(
+                                    Token(TokenType.IDENT, "W", line_number=1),
+                                    [Token(TokenType.POINT, "dp", line_number=1)],
+                                )
+                            ]
                         ),
                     ]
                 ),

@@ -12,7 +12,7 @@ class Property:
 
 @dataclass
 class Node:
-    property: Property
+    property: list[Property]
 
 
 @dataclass
@@ -68,9 +68,20 @@ def parse_property(token: Token, token_iter: Iterator[Token]) -> tuple[Property,
     raise UnexpectedTokenException(token)
 
 
+def parse_properties(
+    token: Token, token_iter: Iterator[Token]
+) -> tuple[list[Property], Token]:
+    properties = []
+    next_token = token
+    while next_token.type == TokenType.IDENT:
+        prop, next_token = parse_property(next_token, token_iter)
+        properties.append(prop)
+    return properties, next_token
+
+
 def parse_node(token: Token, token_iter: Iterator[Token]) -> tuple[Node, Token]:
     if token.type == TokenType.SEMI:
-        prop, next_token = parse_property(next(token_iter), token_iter)
+        prop, next_token = parse_properties(next(token_iter), token_iter)
         return Node(prop), next_token
     raise UnexpectedTokenException(token)
 

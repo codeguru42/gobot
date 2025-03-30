@@ -109,7 +109,8 @@ def parse_game_trees(
 def parse_game_tree(
     token: Token, token_iter: Iterator[Token]
 ) -> tuple[GameTree, Token]:
-    if token.type == TokenType.L_PAREN:
+    next_token = token
+    if next_token.type == TokenType.L_PAREN:
         seq, next_token = parse_sequence(next(token_iter), token_iter)
         game_trees, next_token = parse_game_trees(next_token, token_iter)
         if next_token.type == TokenType.R_PAREN:

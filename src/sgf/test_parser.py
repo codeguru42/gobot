@@ -54,6 +54,21 @@ def test_parse_property():
                 )
             ),
         ),
+        (
+            ";GM[1]FF[4]",
+            Node(
+                [
+                    Property(
+                        Token(TokenType.IDENT, "GM", line_number=1),
+                        [Token(TokenType.NUMBER, "1", line_number=1)],
+                    ),
+                    Property(
+                        Token(TokenType.IDENT, "FF", line_number=1),
+                        [Token(TokenType.NUMBER, "4", line_number=1)],
+                    ),
+                ],
+            ),
+        ),
     ),
 )
 def test_parse_node(input_string, expected):

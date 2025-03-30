@@ -7,6 +7,14 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "args": "${command:pickArgs}"
+        },
+        {
+            "name": "parse_sgf",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/parse_sgf.py",
+            "console": "integratedTerminal",
+            "args": "${command:pickArgs}"
         }
     ]
 }

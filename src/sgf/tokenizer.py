@@ -33,7 +33,9 @@ class Token:
     line_number: int
 
 
-def parse_ident(c: str, input_iter: Iterator[str], line_number: int) -> tuple[Token, str]:
+def parse_ident(
+    c: str, input_iter: Iterator[str], line_number: int
+) -> tuple[Token, str]:
     token = [c]
     next_c = next(input_iter)
     try:
@@ -44,7 +46,9 @@ def parse_ident(c: str, input_iter: Iterator[str], line_number: int) -> tuple[To
         return Token(TokenType.IDENT, "".join(token), line_number), next_c
 
 
-def parse_number(c: str, input_iter: Iterator[str], line_number: int) -> tuple[Token, str]:
+def parse_number(
+    c: str, input_iter: Iterator[str], line_number: int
+) -> tuple[Token, str]:
     token_type = TokenType.NUMBER
     token = [c]
     next_c = next(input_iter)
@@ -64,7 +68,9 @@ def parse_number(c: str, input_iter: Iterator[str], line_number: int) -> tuple[T
         return Token(token_type, "".join(token), line_number), next_c
 
 
-def parse_value(c: str, input_iter: Iterator[str], line_number: int) -> tuple[Token, str]:
+def parse_value(
+    c: str, input_iter: Iterator[str], line_number: int
+) -> tuple[Token, str]:
     token_chars = []
     while c != "]":
         token_chars.append(c)

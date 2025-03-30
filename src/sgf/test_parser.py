@@ -27,14 +27,20 @@ def test_parse_prop_value():
 def test_parse_prop_values():
     token_iter = iter(tokens("[B][W]"))
     prop_values, next_token = parse_prop_values(next(token_iter), token_iter)
-    assert prop_values == [Token(TokenType.COLOR, "B", line_number=1), Token(TokenType.COLOR, "W", line_number=1)]
+    assert prop_values == [
+        Token(TokenType.COLOR, "B", line_number=1),
+        Token(TokenType.COLOR, "W", line_number=1),
+    ]
     assert next_token == Token(TokenType.EOF, "", line_number=1)
 
 
 def test_parse_property():
     token_iter = iter(tokens("B[dd]"))
     prop, next_token = parse_property(next(token_iter), token_iter)
-    assert prop == Property(Token(TokenType.IDENT, "B", line_number=1), [Token(TokenType.POINT, "dd", line_number=1)])
+    assert prop == Property(
+        Token(TokenType.IDENT, "B", line_number=1),
+        [Token(TokenType.POINT, "dd", line_number=1)],
+    )
     assert next_token == Token(TokenType.EOF, "", line_number=1)
 
 
@@ -43,14 +49,22 @@ def test_parse_property():
     (
         (
             ";B[dd]",
-            Node(Property(Token(TokenType.IDENT, "B", line_number=1), [Token(TokenType.POINT, "dd", line_number=1)])),
+            Node(
+                Property(
+                    Token(TokenType.IDENT, "B", line_number=1),
+                    [Token(TokenType.POINT, "dd", line_number=1)],
+                )
+            ),
         ),
         (
             ";AB[dd][jj]",
             Node(
                 Property(
                     Token(TokenType.IDENT, "AB", line_number=1),
-                    [Token(TokenType.POINT, "dd", line_number=1), Token(TokenType.POINT, "jj", line_number=1)],
+                    [
+                        Token(TokenType.POINT, "dd", line_number=1),
+                        Token(TokenType.POINT, "jj", line_number=1),
+                    ],
                 )
             ),
         ),
@@ -82,8 +96,18 @@ def test_parse_sequence():
     token_iter = iter(tokens(";B[dd];W[jj]"))
     expected = Sequence(
         [
-            Node(Property(Token(TokenType.IDENT, "B", line_number=1), [Token(TokenType.POINT, "dd", line_number=1)])),
-            Node(Property(Token(TokenType.IDENT, "W", line_number=1), [Token(TokenType.POINT, "jj", line_number=1)])),
+            Node(
+                Property(
+                    Token(TokenType.IDENT, "B", line_number=1),
+                    [Token(TokenType.POINT, "dd", line_number=1)],
+                )
+            ),
+            Node(
+                Property(
+                    Token(TokenType.IDENT, "W", line_number=1),
+                    [Token(TokenType.POINT, "jj", line_number=1)],
+                )
+            ),
         ]
     )
     sequence, next_token = parse_sequence(next(token_iter), token_iter)

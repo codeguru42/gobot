@@ -6,13 +6,55 @@ from sgf.tokenizer import Token, TokenType, tokens
 @pytest.mark.parametrize(
     "input_string,expected_tokens",
     [
-        ("(", (Token(TokenType.L_PAREN, "(", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        (")", (Token(TokenType.R_PAREN, ")", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        ("[", (Token(TokenType.L_BRACKET, "[", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        ("]", (Token(TokenType.R_BRACKET, "]", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        (";", (Token(TokenType.SEMI, ";", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        (":", (Token(TokenType.COLON, ":", line_number=1), Token(TokenType.EOF, "", line_number=1))),
-        ("FOOBAR", (Token(TokenType.IDENT, "FOOBAR", line_number=1), Token(TokenType.EOF, "", line_number=1))),
+        (
+            "(",
+            (
+                Token(TokenType.L_PAREN, "(", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            ")",
+            (
+                Token(TokenType.R_PAREN, ")", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            "[",
+            (
+                Token(TokenType.L_BRACKET, "[", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            "]",
+            (
+                Token(TokenType.R_BRACKET, "]", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            ";",
+            (
+                Token(TokenType.SEMI, ";", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            ":",
+            (
+                Token(TokenType.COLON, ":", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
+        (
+            "FOOBAR",
+            (
+                Token(TokenType.IDENT, "FOOBAR", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
         (
             "( )",
             (

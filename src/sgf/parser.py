@@ -84,7 +84,9 @@ def parse_sequence(token: Token, token_iter: Iterator[Token]) -> tuple[Sequence,
     return Sequence(nodes), next_token
 
 
-def parse_game_trees(token: Token, token_iter: Iterator[Token]) -> tuple[list[GameTree], Token]:
+def parse_game_trees(
+    token: Token, token_iter: Iterator[Token]
+) -> tuple[list[GameTree], Token]:
     game_trees = []
     next_token = token
     while next_token.type == TokenType.L_PAREN:

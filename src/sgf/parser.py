@@ -101,7 +101,7 @@ def parse_game_tree(
         game_trees, next_token = parse_game_trees(next_token, token_iter)
         if next_token.type == TokenType.R_PAREN:
             return GameTree(seq, game_trees), next(token_iter)
-    raise UnexpectedTokenException(token)
+    raise UnexpectedTokenException(next_token)
 
 
 def parse_collection(token: Token, token_iter: Iterator[Token]) -> Collection:

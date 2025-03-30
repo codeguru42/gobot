@@ -89,7 +89,7 @@ def parse_value(
                 return Token(TokenType.NUMBER, token_str, line_number), c
             if re.fullmatch(re_real, token_str):
                 return Token(TokenType.REAL, token_str, line_number), c
-            if token_str.islower() and len(token_str) == 2:
+            if token_str.isalpha() and token_str.islower() and len(token_str) == 2:
                 return Token(TokenType.POINT, token_str, line_number), c
 
             return Token(TokenType.TEXT, token_str, line_number), c

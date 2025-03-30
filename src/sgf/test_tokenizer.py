@@ -126,6 +126,15 @@ from sgf.tokenizer import Token, TokenType, tokens
                 Token(TokenType.EOF, "", line_number=1),
             ),
         ),
+        (
+            "[5p]",
+            (
+                Token(TokenType.L_BRACKET, "[", line_number=1),
+                Token(TokenType.TEXT, "5p", line_number=1),
+                Token(TokenType.R_BRACKET, "]", line_number=1),
+                Token(TokenType.EOF, "", line_number=1),
+            ),
+        ),
     ],
 )
 def test_tokenizer(input_string: str, expected_tokens: tuple[Token]):

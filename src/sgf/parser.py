@@ -35,6 +35,9 @@ class UnexpectedTokenException(Exception):
     def __init__(self, token: Token):
         self.token = token
 
+    def __str__(self):
+        return f"Unexpected token '{self.token.token}' at line {self.token.line_number}"
+
 
 def parse_prop_value(token: Token, token_iter: Iterator[Token]) -> tuple[Token, Token]:
     next_token = token

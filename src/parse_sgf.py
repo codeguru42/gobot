@@ -2,7 +2,7 @@ import typer
 from pathlib import Path
 from typing import Optional
 
-from sgf.parser import Collection, GameTree, Node, Property, Sequence, parse_sgf
+from sgf.parser import Collection, GameTree, Node, Property, Sequence, UnexpectedTokenException, parse_sgf
 from sgf.tokenizer import tokens
 
 app = typer.Typer(
@@ -64,7 +64,7 @@ def parse_and_visualize_sgf(filename: Path) -> None:
     except FileNotFoundError:
         typer.echo(f"Error: File '{filename}' not found", err=True)
         raise typer.Exit(1)
-    except Exception as e:
+    except UnexpectedTokenException as e:
         typer.echo(f"Error parsing SGF file: {e}", err=True)
         raise typer.Exit(1)
 

@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from sgf.parser import Collection, GameTree, Node, Property, Sequence, UnexpectedTokenException, parse_sgf
-from sgf.tokenizer import tokens
+from sgf.tokenizer import Token, tokens
 
 app = typer.Typer(
     name="parse-sgf",
@@ -23,7 +23,14 @@ def visualize_properties(properties: list[Property], indent: str = "") -> None:
     """Visualize a list of properties."""
     for prop in properties:
         print(f"{indent}- Ident: {prop.ident.token}")
-        print(f"{indent}  Values: {[v.token for v in prop.values]}")
+        print(f"{indent}  Values:")
+        visualize_values(prop.values, indent + "    ")
+
+def visualize_values(values: list[Token], indent: str = "") -> None:
+    """Visualize a list of values."""
+    for value in values:
+        print(f"{indent}- Value: {value.token}")
+        print(f"{indent}  Type: {value.type}")
 
 
 def visualize_sequence(sequence: Sequence, indent: str = "") -> None:

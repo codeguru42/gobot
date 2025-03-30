@@ -12,7 +12,7 @@ class Property:
 
 @dataclass
 class Node:
-    property: list[Property]
+    properties: list[Property]
 
 
 @dataclass

@@ -14,10 +14,10 @@ app = typer.Typer(
 
 def visualize_node(node: Node, indent: str = "") -> None:
     """Visualize a single node in the SGF tree."""
-    prop = node.property
+    props = node.properties
     print(f"{indent}Node:")
-    print(f"{indent}  Property: {prop.ident.token}")
-    print(f"{indent}  Values: {[v.token for v in prop.values]}")
+    print(f"{indent}  Property: {props.ident.token}")
+    print(f"{indent}  Values: {[v.token for v in props.values]}")
 
 
 def visualize_sequence(sequence: Sequence, indent: str = "") -> None:

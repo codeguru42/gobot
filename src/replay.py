@@ -24,17 +24,13 @@ def visit_game_tree(game_tree: parser.GameTree):
 
 
 def visit_root_node(node: parser.Node) -> GameState:
-    game_state = None
     for prop in node.properties:
         match prop.ident.token:
             case "SZ":
                 board_size = int(prop.values[0].token)
-                game_state = GameState.new_game(board_size)
             case "AB":
-                place_stones(game_state, Player.BLACK, prop.values)
-            case "AW":
-                place_stones(game_state, Player.WHITE, prop.values)
-    return game_state
+                handicap_stones = [sgf_coord_to_point(coord.token) for coord in prop.values]
+    return GameState.new_game(board_size, handicap_stones)
 
 
 def place_stones(game_state: GameState, player: Player, coords: list[Token]):

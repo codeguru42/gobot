@@ -184,11 +184,16 @@ class GameState:
         return GameState(next_board, self.next_player.other, self, move)
 
     @classmethod
-    def new_game(cls, board_size: Union[Tuple[int, int], int]) -> Self:
+    def new_game(cls, board_size: Union[Tuple[int, int], int], handicap_stones: Optional[Iterable[Point]] = None) -> Self:
+        first_player = Player.BLACK
         if isinstance(board_size, int):
             board_size = (board_size, board_size)
         board = Board(*board_size)
-        return cls(board, Player.BLACK)
+        if handicap_stones is not None:
+            first_player = Player.WHITE
+            for stone_position in handicap_stones:
+                board.place_stone(Player.BLACK, stone_position)
+        return cls(board, first_player)
 
     def is_over(self) -> bool:
         if self.last_move is None:

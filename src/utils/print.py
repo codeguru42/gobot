@@ -27,5 +27,5 @@ def print_board(board: Board):
         for col in range(1, board.num_cols + 1):
             stone = board.get(Point(row, col))
             line.append(STONE_TO_CHAR[stone])
-        print(f"{bump}{row} {"".join(f" {p} " for p in line)}")
+        print(f"{bump}{row}  {"  ".join(line)}")
     print("   " + COLS[: board.num_cols])

@@ -2,10 +2,11 @@ from pathlib import Path
 
 import typer
 
-from go.goboard import Board, Move
+from go.goboard import Move, GameState
 from go.gotypes import Player, Point
 from sgf import parser, tokenizer
 from utils.print import print_move, print_board
+
 
 def play(game: parser.Collection):
     visit_collection(game)
@@ -16,28 +17,29 @@ def visit_collection(collection: parser.Collection):
         visit_game_tree(game)
 
 
-def visit_game_tree(game: parser.GameTree):
-    board = visit_root_node(game.mainline.nodes[0])
-    visit_move_nodes(game.mainline.nodes[1:], board)
+def visit_game_tree(game_tree: parser.GameTree):
+    game_state = visit_root_node(game_tree.mainline.nodes[0])
+    visit_move_nodes(game_tree.mainline.nodes[1:], game_state)
 
 
-def visit_root_node(node: parser.Node):
+def visit_root_node(node: parser.Node) -> GameState:
     for prop in node.properties:
         match prop.ident.token:
             case "SZ":
                 board_size = int(prop.values[0].token)
-    board = Board(board_size, board_size)
-    return board
+    return GameState.new_game(board_size)
 
 
-def visit_move_nodes(nodes: list[parser.Node], board: Board):
+def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
     for node in nodes:
-        visit_move_node(node, board)
+        game_state= visit_move_node(node, game_state)
 
-def sgf_coord_to_point(coord: str) -> Point:
-    x = ord(coord[0]) - ord("a")
-    y = ord(coord[1]) - ord("a")
-    return Point(x, y)
+def sgf_coord_to_move(coord: str) -> Move:
+    if coord == "":
+        return Move(is_pass=True)
+    x = ord(coord[0]) - ord("a") + 1
+    y = ord(coord[1]) - ord("a") + 1
+    return Move(Point(x, y))
 
 
 class InvalidPlayerException(Exception):
@@ -45,9 +47,9 @@ class InvalidPlayerException(Exception):
         super().__init__(message)
 
 
-def visit_move_node(node: parser.Node, board: Board):
+def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
     prop = node.properties[0]
-    point = sgf_coord_to_point(prop.values[0].token)
+    move = sgf_coord_to_move(prop.values[0].token)
     match prop.ident.token:
         case "B":
             player = Player.BLACK
@@ -55,10 +57,12 @@ def visit_move_node(node: parser.Node, board: Board):
             player = Player.WHITE
         case _:
             raise InvalidPlayerException(f"Invalid player: {prop.ident.token}") # This can happen if the move is not valid (e.g., pass or resign)
-    board.place_stone(player, point)
-    print_move(player, Move(point))
-    print_board(board)
+    print(move)
+    game_state = game_state.apply_move(move)
+    print_move(player, move)
+    print_board(game_state.board)
     print()
+    return game_state
 
 
 def main(filename: Path):

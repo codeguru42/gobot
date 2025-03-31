@@ -5,6 +5,7 @@ import typer
 from go.goboard import Move, GameState
 from go.gotypes import Player, Point
 from sgf import parser, tokenizer
+from sgf.tokenizer import Token
 from utils.print import print_move, print_board
 
 
@@ -23,11 +24,24 @@ def visit_game_tree(game_tree: parser.GameTree):
 
 
 def visit_root_node(node: parser.Node) -> GameState:
+    game_state = None
     for prop in node.properties:
         match prop.ident.token:
             case "SZ":
                 board_size = int(prop.values[0].token)
-    return GameState.new_game(board_size)
+                game_state = GameState.new_game(board_size)
+            case "AB":
+                place_stones(game_state, Player.BLACK, prop.values)
+            case "AW":
+                place_stones(game_state, Player.WHITE, prop.values)
+    return game_state
+
+
+def place_stones(game_state: GameState, player: Player, coords: list[Token]):
+    for coord in coords:
+        if coord.token:
+            point = sgf_coord_to_point(coord.token)
+            game_state.board.place_stone(player, point)
 
 
 def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
@@ -37,9 +51,14 @@ def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
 def sgf_coord_to_move(coord: str) -> Move:
     if coord == "":
         return Move(is_pass=True)
+    return Move(sgf_coord_to_point(coord))
+
+
+def sgf_coord_to_point(coord):
     x = ord(coord[0]) - ord("a") + 1
     y = ord(coord[1]) - ord("a") + 1
-    return Move(Point(x, y))
+    point = Point(x, y)
+    return point
 
 
 class InvalidPlayerException(Exception):

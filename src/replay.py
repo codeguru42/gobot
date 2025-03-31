@@ -1,10 +1,11 @@
 from pathlib import Path
+
 import typer
 
-from go.goboard import Board
+from go.goboard import Board, Move
 from go.gotypes import Player, Point
 from sgf import parser, tokenizer
-
+from utils.print import print_move, print_board
 
 def play(game: parser.Collection):
     visit_collection(game)
@@ -39,14 +40,25 @@ def sgf_coord_to_point(coord: str) -> Point:
     return Point(x, y)
 
 
+class InvalidPlayerException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def visit_move_node(node: parser.Node, board: Board):
-    for prop in node.properties:
-        point = sgf_coord_to_point(prop.values[0].token)
-        match prop.ident.token:
-            case "B":
-                board.place_stone(Player.BLACK, point)
-            case "W":
-                board.place_stone(Player.WHITE, point)
+    prop = node.properties[0]
+    point = sgf_coord_to_point(prop.values[0].token)
+    match prop.ident.token:
+        case "B":
+            player = Player.BLACK
+        case "W":
+            player = Player.WHITE
+        case _:
+            raise InvalidPlayerException(f"Invalid player: {prop.ident.token}") # This can happen if the move is not valid (e.g., pass or resign)
+    board.place_stone(player, point)
+    print_move(player, Move(point))
+    print_board(board)
+    print()
 
 
 def main(filename: Path):

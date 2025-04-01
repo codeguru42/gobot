@@ -11,7 +11,8 @@ from utils.print import print_move, print_board
 
 def play(game: parser.Collection):
     for game_state in visit_collection(game):
-        print_move(game_state.next_player, game_state.last_move)
+        if game_state.last_move:
+            print_move(game_state.next_player, game_state.last_move)
         print_board(game_state.board)
         print()
 
@@ -23,6 +24,7 @@ def visit_collection(collection: parser.Collection):
 
 def visit_game_tree(game_tree: parser.GameTree):
     game_state = visit_root_node(game_tree.mainline.nodes[0])
+    yield game_state
     yield from visit_move_nodes(game_tree.mainline.nodes[1:], game_state)
 
 

@@ -29,7 +29,9 @@ def visit_root_node(node: parser.Node) -> GameState:
             case "SZ":
                 board_size = int(prop.values[0].token)
             case "AB":
-                handicap_stones = [sgf_coord_to_point(coord.token) for coord in prop.values]
+                handicap_stones = [
+                    sgf_coord_to_point(coord.token) for coord in prop.values
+                ]
     return GameState.new_game(board_size, handicap_stones)
 
 
@@ -42,7 +44,8 @@ def place_stones(game_state: GameState, player: Player, coords: list[Token]):
 
 def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
     for node in nodes:
-        game_state= visit_move_node(node, game_state)
+        game_state = visit_move_node(node, game_state)
+
 
 def sgf_coord_to_move(coord: str) -> Move:
     if coord == "":
@@ -71,7 +74,9 @@ def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
         case "W":
             player = Player.WHITE
         case _:
-            raise InvalidPlayerException(f"Invalid player: {prop.ident.token}") # This can happen if the move is not valid (e.g., pass or resign)
+            raise InvalidPlayerException(
+                f"Invalid player: {prop.ident.token}"
+            )  # This can happen if the move is not valid (e.g., pass or resign)
     game_state = game_state.apply_move(move)
     print_move(player, move)
     print_board(game_state.board)

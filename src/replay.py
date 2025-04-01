@@ -10,17 +10,20 @@ from utils.print import print_move, print_board
 
 
 def play(game: parser.Collection):
-    visit_collection(game)
+    for game_state in visit_collection(game):
+        print_move(game_state.next_player, game_state.last_move)
+        print_board(game_state.board)
+        print()
 
 
 def visit_collection(collection: parser.Collection):
     for game in collection.games:
-        visit_game_tree(game)
+        yield from visit_game_tree(game)
 
 
 def visit_game_tree(game_tree: parser.GameTree):
     game_state = visit_root_node(game_tree.mainline.nodes[0])
-    visit_move_nodes(game_tree.mainline.nodes[1:], game_state)
+    yield from visit_move_nodes(game_tree.mainline.nodes[1:], game_state)
 
 
 def visit_root_node(node: parser.Node) -> GameState:
@@ -45,6 +48,7 @@ def place_stones(game_state: GameState, player: Player, coords: list[Token]):
 def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
     for node in nodes:
         game_state = visit_move_node(node, game_state)
+        yield game_state
 
 
 def sgf_coord_to_move(coord: str) -> Move:
@@ -77,10 +81,8 @@ def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
             raise InvalidPlayerException(
                 f"Invalid player: {prop.ident.token}"
             )
+    assert game_state.next_player == player
     game_state = game_state.apply_move(move)
-    print_move(player, move)
-    print_board(game_state.board)
-    print()
     return game_state
 
 

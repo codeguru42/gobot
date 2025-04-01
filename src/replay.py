@@ -76,7 +76,7 @@ def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
         case _:
             raise InvalidPlayerException(
                 f"Invalid player: {prop.ident.token}"
-            )  # This can happen if the move is not valid (e.g., pass or resign)
+            )
     game_state = game_state.apply_move(move)
     print_move(player, move)
     print_board(game_state.board)

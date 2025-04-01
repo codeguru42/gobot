@@ -10,16 +10,17 @@ from utils.print import print_move, print_board
 
 
 def play(game: parser.Collection):
-    for game_state in visit_collection(game):
-        if game_state.last_move:
-            print_move(game_state.next_player, game_state.last_move)
-        print_board(game_state.board)
-        print()
+    for game in visit_collection(game):
+        for game_state in game:
+            if game_state.last_move:
+                print_move(game_state.next_player, game_state.last_move)
+            print_board(game_state.board)
+            print()
 
 
 def visit_collection(collection: parser.Collection):
     for game in collection.games:
-        yield from visit_game_tree(game)
+        yield visit_game_tree(game)
 
 
 def visit_game_tree(game_tree: parser.GameTree):

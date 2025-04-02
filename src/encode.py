@@ -1,12 +1,14 @@
 import tarfile
+from io import BufferedReader
 from pathlib import Path
 from typing import Iterable
 
 import typer
 
-from parse_sgf import visualize_collection
+from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
+from utils.print import print_move, print_board
 
 
 def extract_files(input_directory: Path) -> Iterable[BufferedReader]:
@@ -23,9 +25,21 @@ def parse_files(input_directory: Path) -> Iterable[Collection]:
         yield parse_sgf(tokens(content))
 
 
-def main(input_directory: Path, output_directory: Path):
+def replay_games(input_directory: Path):
     for collection in parse_files(input_directory):
-        visualize_collection(collection)
+        yield visit_collection(collection)
+
+
+def main(input_directory: Path, output_directory: Path):
+    for games in replay_games(input_directory):
+        for game in games:
+            for game_state in game:
+                if game_state.last_move:
+                    print_move(
+                        game_state.previous_state.next_player, game_state.last_move
+                    )
+                print_board(game_state.board)
+
 
 if __name__ == "__main__":
     typer.run(main)

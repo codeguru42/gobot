@@ -30,6 +30,7 @@ def visit_game_tree(game_tree: parser.GameTree):
 
 
 def visit_root_node(node: parser.Node) -> GameState:
+    handicap_stones = None
     for prop in node.properties:
         match prop.ident.token:
             case "SZ":

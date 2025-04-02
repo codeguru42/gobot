@@ -5,6 +5,7 @@ from typing import Iterable
 
 import typer
 
+from go.goboard import GameState
 from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
@@ -19,19 +20,23 @@ def extract_files(input_directory: Path) -> Iterable[BufferedReader]:
                     yield tar.extractfile(member)
 
 
-def parse_files(input_directory: Path) -> Iterable[Collection]:
-    for f in extract_files(input_directory):
+def parse_files(sgf_files: Iterable[BufferedReader]) -> Iterable[Collection]:
+    for f in sgf_files:
         content = f.read().decode("utf-8")
         yield parse_sgf(tokens(content))
 
 
-def replay_games(input_directory: Path):
-    for collection in parse_files(input_directory):
+def replay_games(
+    collections: Iterable[Collection],
+) -> Iterable[Iterable[Iterable[GameState]]]:
+    for collection in collections:
         yield visit_collection(collection)
 
 
 def main(input_directory: Path, output_directory: Path):
-    for games in replay_games(input_directory):
+    sgf_files = extract_files(input_directory)
+    collections = parse_files(sgf_files)
+    for games in replay_games(collections):
         for game in games:
             for game_state in game:
                 if game_state.last_move:

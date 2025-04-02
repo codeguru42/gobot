@@ -1,14 +1,20 @@
+import tarfile
 from pathlib import Path
 
 import typer
 
-def read_files(input_directory: Path):
+
+def extract_files(input_directory: Path):
     for file in input_directory.glob("*.tar.gz"):
-        print(file.name)
+        with tarfile.open(file, "r:gz") as tar:
+            for member in tar.getmembers():
+                if member.isfile():
+                    yield tar.extractfile(member)
 
 
 def main(input_directory: Path, output_directory: Path):
-    read_files(input_directory)
+    for f in extract_files(input_directory):
+        print(f.read())
 
 
 if __name__ == "__main__":

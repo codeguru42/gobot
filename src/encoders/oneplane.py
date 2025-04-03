@@ -28,8 +28,11 @@ class OnePlaneEncoder(Encoder):
                     board_matrix[0, r, c] = -1
         return board_matrix
 
-    def encode_point(self, point: Point) -> int:
-        return self.board_width * (point.row - 1) + (point.col - 1)
+    def encode_point(self, point: Point) -> np.ndarray:
+        index = self.board_width * (point.row - 1) + (point.col - 1)
+        move_one_hot = np.zeros(self.num_points())
+        move_one_hot[index] = 1
+        return move_one_hot
 
     def decode_point_index(self, index: int) -> Point:
         row = index // self.board_width

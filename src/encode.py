@@ -14,6 +14,7 @@ from sgf.tokenizer import tokens
 
 def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
     for file in input_directory.glob("*.tar.gz"):
+        typer.echo(f"Extracting {file.name}")
         with tarfile.open(file, "r:gz") as tar:
             for member in tar.getmembers():
                 if member.isfile():
@@ -21,6 +22,7 @@ def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
 
 
 def parse_file(sgf_file: Optional[IO[bytes]]) -> Collection:
+    typer.echo("****")
     typer.echo(f"Parsing {sgf_file.name}")
     content = sgf_file.read().decode("utf-8")
     return parse_sgf(tokens(content))
@@ -39,7 +41,6 @@ def encode_game(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
                 "oneplane", (game_state.board.num_cols, game_state.board.num_rows)
             )
             if game_state.last_move is not None and game_state.last_move.is_play:
-                typer.echo(f"Last move: {game_state.last_move}")
                 yield (
                     encoder.encode(game_state),
                     encoder.encode_point(game_state.last_move.point),
@@ -50,22 +51,36 @@ def encode_all(
     sgf_files: Iterable[Optional[IO[bytes]]],
 ) -> Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
-        typer.echo(f"Parsing {file.name}")
         collection = parse_file(file)
         game_states = replay_game(collection)
         yield file.name, encode_game(game_states)
+
+
+def save_encodings(
+    encodings: Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]],
+    output_directory: Path,
+) -> None:
+    feature_base = output_directory / "features"
+    label_base = output_directory / "labels"
+    for file_name, encs in encodings:
+        typer.echo(f"Saving {file_name}")
+        features, labels = zip(*list(encs))
+        sgf_path = Path(file_name)
+        feature_path = feature_base / sgf_path.parent
+        feature_path.mkdir(parents=True, exist_ok=True)
+        label_path = label_base / sgf_path.parent
+        label_path.mkdir(parents=True, exist_ok=True)
+        np.save(feature_path / sgf_path.stem, np.concatenate(features))
+        np.save(label_path / sgf_path.stem, labels)
 
 
 def main(input_directory: Path, output_directory: Path):
     typer.echo(f"Extracting files from {input_directory}")
     sgf_files = extract_files(input_directory)
     typer.echo("Encoding games...")
-    encoded = encode_all(sgf_files)
-    for file_name, encs in encoded:
-        typer.echo(file_name)
-        for feature, label in encs:
-            typer.echo(feature)
-            typer.echo(label)
+    encodings = encode_all(sgf_files)
+    typer.echo("Saving encodings...")
+    save_encodings(encodings, output_directory)
 
 
 if __name__ == "__main__":

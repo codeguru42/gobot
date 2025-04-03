@@ -1,3 +1,4 @@
+import itertools
 import tarfile
 from pathlib import Path
 from typing import Iterable, IO, Optional
@@ -63,15 +64,19 @@ def save_encodings(
     feature_base = output_directory / "features"
     label_base = output_directory / "labels"
     for file_name, encs in encodings:
-        typer.echo(f"Saving {file_name}")
-        features, labels = zip(*list(encs))
-        sgf_path = Path(file_name)
-        feature_path = feature_base / sgf_path.parent
-        feature_path.mkdir(parents=True, exist_ok=True)
-        label_path = label_base / sgf_path.parent
-        label_path.mkdir(parents=True, exist_ok=True)
-        np.save(feature_path / sgf_path.stem, np.concatenate(features))
-        np.save(label_path / sgf_path.stem, labels)
+        try:
+            typer.echo(f"Saving {file_name}")
+            features, labels = zip(*encs)
+            sgf_path = Path(file_name)
+            feature_path = feature_base / sgf_path.parent
+            feature_path.mkdir(parents=True, exist_ok=True)
+            label_path = label_base / sgf_path.parent
+            label_path.mkdir(parents=True, exist_ok=True)
+            np.save(feature_path / sgf_path.stem, np.concatenate(features))
+            np.save(label_path / sgf_path.stem, np.concatenate(labels))
+        except Exception as e:
+            typer.echo("ERROR: Skipping.")
+            typer.echo(e)
 
 
 def main(input_directory: Path, output_directory: Path):

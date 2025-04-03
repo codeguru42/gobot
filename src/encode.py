@@ -20,18 +20,16 @@ def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
                     yield tar.extractfile(member)
 
 
-def parse_files(sgf_files: Iterable[Optional[IO[bytes]]]) -> Iterable[Collection]:
-    for f in sgf_files:
-        typer.echo(f"Parsing {f.name}")
-        content = f.read().decode("utf-8")
-        yield parse_sgf(tokens(content))
+def parse_file(sgf_file: Optional[IO[bytes]]) -> Collection:
+    typer.echo(f"Parsing {sgf_file.name}")
+    content = sgf_file.read().decode("utf-8")
+    return parse_sgf(tokens(content))
 
 
-def replay_games(
-    collections: Iterable[Collection],
-) -> Iterable[Iterable[Iterable[GameState]]]:
-    for collection in collections:
-        yield visit_collection(collection)
+def replay_game(
+    collection: Collection,
+) -> Iterable[Iterable[GameState]]:
+    return visit_collection(collection)
 
 
 def encode_game(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
@@ -49,19 +47,25 @@ def encode_game(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
 
 
 def encode_all(
-    collections: Iterable[Collection],
-) -> Iterable[Iterable[tuple[np.ndarray, np.ndarray]]]:
-    for games in replay_games(collections):
-        yield encode_game(games)
+    sgf_files: Iterable[Optional[IO[bytes]]],
+) -> Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]]:
+    for file in sgf_files:
+        typer.echo(f"Parsing {file.name}")
+        collection = parse_file(file)
+        game_states = replay_game(collection)
+        yield file.name, encode_game(game_states)
 
 
 def main(input_directory: Path, output_directory: Path):
+    typer.echo(f"Extracting files from {input_directory}")
     sgf_files = extract_files(input_directory)
-    collections = parse_files(sgf_files)
-    for encs in encode_all(collections):
-        for x, y in encs:
-            print(x)
-            print(y)
+    typer.echo("Encoding games...")
+    encoded = encode_all(sgf_files)
+    for file_name, encs in encoded:
+        typer.echo(file_name)
+        for feature, label in encs:
+            typer.echo(feature)
+            typer.echo(label)
 
 
 if __name__ == "__main__":

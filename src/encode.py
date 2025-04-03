@@ -1,7 +1,6 @@
 import tarfile
-from io import BufferedReader
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, IO, Optional
 
 import numpy as np
 import typer
@@ -13,7 +12,7 @@ from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
 
 
-def extract_files(input_directory: Path) -> Iterable[BufferedReader]:
+def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
     for file in input_directory.glob("*.tar.gz"):
         with tarfile.open(file, "r:gz") as tar:
             for member in tar.getmembers():
@@ -21,7 +20,7 @@ def extract_files(input_directory: Path) -> Iterable[BufferedReader]:
                     yield tar.extractfile(member)
 
 
-def parse_files(sgf_files: Iterable[BufferedReader]) -> Iterable[Collection]:
+def parse_files(sgf_files: Iterable[Optional[IO[bytes]]]) -> Iterable[Collection]:
     for f in sgf_files:
         typer.echo(f"Parsing {f.name}")
         content = f.read().decode("utf-8")

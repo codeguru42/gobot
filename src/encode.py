@@ -1,4 +1,3 @@
-import itertools
 import tarfile
 from pathlib import Path
 from typing import Iterable, IO, Optional

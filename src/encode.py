@@ -34,7 +34,7 @@ def replay_game(
     return visit_collection(collection)
 
 
-def encode_game(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
+def encode_games(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for game in games:
         for game_state in game:
             encoder = get_encoder_by_name(
@@ -47,13 +47,13 @@ def encode_game(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
                 )
 
 
-def encode_all(
+def encode_all_files(
     sgf_files: Iterable[Optional[IO[bytes]]],
 ) -> Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
         collection = parse_file(file)
         game_states = replay_game(collection)
-        yield file.name, encode_game(game_states)
+        yield file.name, encode_games(game_states)
 
 
 def save_encodings(
@@ -82,7 +82,7 @@ def main(input_directory: Path, output_directory: Path):
     typer.echo(f"Extracting files from {input_directory}")
     sgf_files = extract_files(input_directory)
     typer.echo("Encoding games...")
-    encodings = encode_all(sgf_files)
+    encodings = encode_all_files(sgf_files)
     typer.echo("Saving encodings...")
     save_encodings(encodings, output_directory)
 

@@ -47,13 +47,19 @@ def encode_games(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
                 )
 
 
+def encode_file(
+    sgf_file: Optional[IO[bytes]],
+) -> Iterable[tuple[np.ndarray, np.ndarray]]:
+    collection = parse_file(sgf_file)
+    game_states = replay_game(collection)
+    return encode_games(game_states)
+
+
 def encode_all_files(
     sgf_files: Iterable[Optional[IO[bytes]]],
 ) -> Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
-        collection = parse_file(file)
-        game_states = replay_game(collection)
-        yield file.name, encode_games(game_states)
+        yield file.name, encode_file(file)
 
 
 def save_encodings(

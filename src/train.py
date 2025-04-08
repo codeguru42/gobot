@@ -4,7 +4,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
 
+import numpy as np
 import typer
+
+from encode import encode_file
 
 
 @dataclass(frozen=True)
@@ -25,6 +28,17 @@ def get_sgf_files(data_directory: Path) -> Iterable[FileInfo]:
             for member in tar.getmembers():
                 if member.isfile():
                     yield FileInfo(file.name, member.name)
+
+
+def encode_from_file_info(
+    files: Iterable[FileInfo],
+) -> Iterable[Iterable[tuple[np.ndarray, np.ndarray]]]:
+    for file_info in files:
+        with tarfile.open(file_info.tarfile) as tar:
+            sgf_file = tar.extractfile(file_info.filename)
+            if sgf_file is None:
+                continue
+            yield encode_file(sgf_file)
 
 
 def main(input_directory: Path):

@@ -14,7 +14,7 @@ from encode import encode_file
 
 @dataclass(frozen=True)
 class FileInfo:
-    tarfile: str
+    tarfile: Path
     filename: str
 
 
@@ -29,7 +29,7 @@ def get_sgf_files(data_directory: Path) -> Iterable[FileInfo]:
         with tarfile.open(file, "r:gz") as tar:
             for member in tar.getmembers():
                 if member.isfile():
-                    yield FileInfo(file.name, member.name)
+                    yield FileInfo(file.absolute(), member.name)
 
 
 def encode_from_file_info(
@@ -55,7 +55,7 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
             Conv2D(48, (7, 7), data_format='channels_first'),
             Activation('relu'),
 
-            ZeroPadding2D(padding=2, data_format='channels_first'),  # <2>
+            ZeroPadding2D(padding=2, data_format='channels_first'),
             Conv2D(32, (5, 5), data_format='channels_first'),
             Activation('relu'),
 
@@ -73,6 +73,7 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
         ]
     )
 
+    model.compile()
     model.fit(
         training_data, batch_size=64, epochs=15, verbose=1, validation_data=testing_data
     )

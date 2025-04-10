@@ -1,3 +1,4 @@
+import itertools
 import random
 import tarfile
 from dataclasses import dataclass
@@ -44,10 +45,38 @@ def encode_from_file_info(
             yield from encode_file(sgf_file)
 
 
+def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
+    """Collect data into non-overlapping fixed-length chunks or blocks."""
+    # grouper('ABCDEFG', 3, fillvalue='x') → ABC DEF Gxx
+    # grouper('ABCDEFG', 3, incomplete='strict') → ABC DEF ValueError
+    # grouper('ABCDEFG', 3, incomplete='ignore') → ABC DEF
+    iterators = [iter(iterable)] * n
+    match incomplete:
+        case "fill":
+            return itertools.zip_longest(*iterators, fillvalue=fillvalue)
+        case "strict":
+            return zip(*iterators, strict=True)
+        case "ignore":
+            return zip(*iterators)
+        case _:
+            raise ValueError("Expected fill, strict, or ignore")
+
+
+def batches(data, batch_size):
+    for batch in grouper(data, batch_size):
+        features = []
+        labels = []
+        for feature, label in batch:
+            features.append(feature)
+            labels.append(label)
+        yield np.array(features), np.array(labels)
+
+
 def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo]):
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
 
+    batch_size = 64
     input_shape = (1, 19, 19)
     model = Sequential(
         [
@@ -78,7 +107,10 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
     )
     model.fit(
-        training_data, batch_size=64, epochs=15, verbose=1, validation_data=testing_data
+        batches(training_data, batch_size),
+        epochs=15,
+        verbose=1,
+        validation_data=batches(testing_data, batch_size),
     )
     score = model.evaluate(testing_data, verbose=0)
     typer.echo(f"Test loss: {score[0]}")

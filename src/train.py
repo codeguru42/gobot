@@ -52,7 +52,7 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
     model = Sequential(
         [
             keras.layers.Input(input_shape),
-            keras.layers.ZeroPadding2D(padding=3, data_format='channels_first'),  # <1>
+            keras.layers.ZeroPadding2D(padding=3, data_format='channels_first'),
             keras.layers.Conv2D(48, (7, 7), data_format='channels_first'),
             keras.layers.Activation('relu'),
 

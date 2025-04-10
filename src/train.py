@@ -74,7 +74,9 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
         ]
     )
 
-    model.compile()
+    model.compile(
+        loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
+    )
     model.fit(
         training_data, batch_size=64, epochs=15, verbose=1, validation_data=testing_data
     )

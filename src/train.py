@@ -98,7 +98,7 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
             keras.layers.Activation('relu'),
 
             keras.layers.Flatten(),
-            keras.layers.Dense(512),
+            keras.layers.Dense(361),
             keras.layers.Activation('relu'),
         ]
     )

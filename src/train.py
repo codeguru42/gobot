@@ -8,7 +8,6 @@ from typing import Iterable, Sequence
 import keras
 import numpy as np
 import typer
-from keras import Sequential
 
 from encode import encode_file
 
@@ -72,13 +71,13 @@ def batches(data, batch_size):
         yield np.array(features), np.array(labels)
 
 
-def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo]):
+def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo]) -> keras.Model:
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
 
     batch_size = 64
     input_shape = (1, 19, 19)
-    model = Sequential(
+    model = keras.Sequential(
         [
             keras.layers.Input(input_shape),
             keras.layers.ZeroPadding2D(padding=3, data_format='channels_first'),
@@ -112,6 +111,10 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
         verbose=1,
         validation_data=batches(testing_data, batch_size),
     )
+    return model
+
+
+def evaluate(model, testing_data):
     score = model.evaluate(testing_data, verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
@@ -122,7 +125,8 @@ def main(input_directory: Path):
     training, testing = sample(list(files), 1)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
-    train(training, testing)
+    model = train(training, testing)
+    evaluate(model, testing)
 
 
 if __name__ == "__main__":

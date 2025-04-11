@@ -120,13 +120,14 @@ def evaluate(model, testing_data):
     typer.echo(f"Test accuracy: {score[1]}")
 
 
-def main(input_directory: Path):
+def main(input_directory: Path, model_output: Path):
     files = get_sgf_files(input_directory)
     training, testing = sample(list(files), 1)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
     model = train(training, testing)
     evaluate(model, testing)
+    model.save(model_output)
 
 
 if __name__ == "__main__":

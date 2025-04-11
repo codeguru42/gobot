@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Optional
 
 import typer
 
@@ -52,7 +53,8 @@ def place_stones(game_state: GameState, player: Player, coords: list[Token]):
 def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
     for node in nodes:
         game_state = visit_move_node(node, game_state)
-        yield game_state
+        if game_state is not None:
+            yield game_state
 
 
 def sgf_coord_to_move(coord: str) -> Move:
@@ -73,7 +75,7 @@ class InvalidPlayerException(Exception):
         super().__init__(message)
 
 
-def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
+def visit_move_node(node: parser.Node, game_state: GameState) -> Optional[GameState]:
     prop = node.properties[0]
     move = sgf_coord_to_move(prop.values[0].token)
     match prop.ident.token:
@@ -82,9 +84,7 @@ def visit_move_node(node: parser.Node, game_state: GameState) -> GameState:
         case "W":
             player = Player.WHITE
         case _:
-            raise InvalidPlayerException(
-                f"Invalid player: {prop.ident.token}"
-            )
+            return None
     assert game_state.next_player == player
     game_state = game_state.apply_move(move)
     return game_state

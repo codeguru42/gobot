@@ -37,7 +37,7 @@ def encode_from_file_info(
     files: Iterable[FileInfo],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for file_info in files:
-        typer.echo(f"Encoding {file_info}")
+        typer.echo(f"\nEncoding {file_info}")
         with tarfile.open(file_info.tarfile) as tar:
             sgf_file = tar.extractfile(file_info.filename)
             if sgf_file is None:
@@ -113,14 +113,14 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
         validation_data=batches(testing_data, batch_size),
     )
     score = model.evaluate(testing_data, verbose=0)
-    typer.echo(f"Test loss: {score[0]}")
+    typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
 
 
 def main(input_directory: Path):
     files = get_sgf_files(input_directory)
     training, testing = sample(list(files), 1)
-    typer.echo(f"Training {len(training)} samples")
+    typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
     train(training, testing)
 

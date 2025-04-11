@@ -22,7 +22,7 @@ def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
 
 
 def parse_file(sgf_file: Optional[IO[bytes]]) -> Collection:
-    typer.echo("****")
+    typer.echo("\n****")
     typer.echo(f"Parsing {sgf_file.name}")
     content = sgf_file.read().decode("utf-8")
     return parse_sgf(tokens(content))

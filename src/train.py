@@ -3,7 +3,7 @@ import random
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Sequence
+from typing import Iterable, Sequence, Annotated
 
 import keras
 import numpy as np
@@ -71,11 +71,12 @@ def batches(data, batch_size):
         yield np.array(features), np.array(labels)
 
 
-def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo]) -> keras.Model:
+def train(
+    training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo], batch_size
+) -> keras.Model:
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
 
-    batch_size = 64
     input_shape = (1, 19, 19)
     model = keras.Sequential(
         [
@@ -121,12 +122,17 @@ def evaluate(model: keras.Model, testing_files: Iterable[FileInfo]):
     typer.echo(f"Test accuracy: {score[1]}")
 
 
-def main(input_directory: Path, model_output: Path):
+def main(
+    input_directory: Path,
+    model_output: Path,
+    test_size: Annotated[int, typer.Option("--test_size")] = 100,
+    batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
+):
     files = get_sgf_files(input_directory)
-    training, testing = sample(list(files), 1)
+    training, testing = sample(list(files), test_size)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
-    model = train(training, testing)
+    model = train(training, testing, batch_size)
     evaluate(model, testing)
     model.save(model_output)
 

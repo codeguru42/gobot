@@ -114,7 +114,8 @@ def train(training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo])
     return model
 
 
-def evaluate(model, testing_data):
+def evaluate(model: keras.Model, testing_files: Iterable[FileInfo]):
+    testing_data = encode_from_file_info(testing_files)
     score = model.evaluate(testing_data, verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")

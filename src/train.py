@@ -134,6 +134,7 @@ def main(
     typer.echo(f"Testing {len(testing)} samples")
     model = train(training, testing, batch_size)
     evaluate(model, testing)
+    model_output_file.parent.mkdir(parents=True, exist_ok=True)
     model.save(model_output_file)
 
 

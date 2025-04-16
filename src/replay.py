@@ -32,6 +32,7 @@ def visit_game_tree(game_tree: parser.GameTree):
 
 def visit_root_node(node: parser.Node) -> GameState:
     handicap_stones = None
+    board_size = None
     for prop in node.properties:
         match prop.ident.token:
             case "SZ":
@@ -59,11 +60,11 @@ def visit_move_nodes(nodes: list[parser.Node], game_state: GameState):
 
 def sgf_coord_to_move(coord: str) -> Move:
     if coord == "":
-        return Move(is_pass=True)
-    return Move(sgf_coord_to_point(coord))
+        return Move.pass_turn()
+    return Move.play(sgf_coord_to_point(coord))
 
 
-def sgf_coord_to_point(coord):
+def sgf_coord_to_point(coord: str) -> Point:
     x = ord(coord[0]) - ord("a") + 1
     y = ord(coord[1]) - ord("a") + 1
     point = Point(x, y)

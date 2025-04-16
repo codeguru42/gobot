@@ -13,6 +13,7 @@ dependencies = [
     "tensorflow-metal>=1.2.0 ; sys_platform == 'darwin'",
     "tensorflow>=2.18.1",
     "typer>=0.15.2",
+    "tensorflow[and-cuda]>=2.18.1 ; sys_platform == 'linux'",
 ]
 
 [dependency-groups]

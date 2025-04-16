@@ -14,7 +14,7 @@ def play(game: parser.Collection):
     for game in visit_collection(game):
         for game_state in game:
             if game_state.last_move:
-                print_move(game_state.next_player, game_state.last_move)
+                print_move(game_state.previous_state.next_player, game_state.last_move)
             print_board(game_state.board)
             print()
 

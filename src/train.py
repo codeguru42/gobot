@@ -15,7 +15,9 @@ from utils.json_decoders import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
 
 
-def sample_testing_data[T](data: Sequence[T], k: int, input_directory: Path) -> tuple[list[T], list[T]]:
+def sample_testing_data[T](
+    data: Sequence[T], k: int, input_directory: Path
+) -> tuple[list[T], list[T]]:
     test_sample_path = input_directory / "test.json"
     if test_sample_path.exists():
         with test_sample_path.open("r") as f:
@@ -76,7 +78,9 @@ def batches(data, batch_size):
 
 
 def train(
-    training_files: Iterable[FileInfo], testing_files: Iterable[FileInfo], batch_size
+    training_files: Iterable[FileInfo],
+    testing_files: Iterable[FileInfo],
+    batch_size: int,
 ) -> keras.Model:
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
@@ -87,8 +91,7 @@ def train(
             keras.layers.Input(input_shape),
             keras.layers.ZeroPadding2D(padding=3, data_format="channels_first"),
             keras.layers.Conv2D(48, (7, 7), data_format="channels_first"),
-            keras.layers.Activation('relu'),
-
+            keras.layers.Activation("relu"),
             keras.layers.ZeroPadding2D(padding=2, data_format="channels_first"),
             keras.layers.Conv2D(32, (5, 5), data_format="channels_first"),
             keras.layers.Activation("relu"),

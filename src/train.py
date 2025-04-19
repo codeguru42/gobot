@@ -131,7 +131,7 @@ def evaluate(model: keras.Model, testing_files: Iterable[FileInfo]):
 
 def main(
     input_directory: Path,
-    model_output_file: Path,
+    output_directory: Path,
     test_size: Annotated[int, typer.Option("--test_size")] = 100,
     batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
 ):
@@ -141,8 +141,9 @@ def main(
     typer.echo(f"Testing {len(testing)} samples")
     model = train(training, testing, batch_size)
     evaluate(model, testing)
-    model_output_file.parent.mkdir(parents=True, exist_ok=True)
-    model.save(model_output_file)
+    output_directory.parent.mkdir(parents=True, exist_ok=True)
+    model_file = output_directory / "final.h5"
+    model.save(model_file)
 
 
 if __name__ == "__main__":

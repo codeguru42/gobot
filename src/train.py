@@ -1,7 +1,7 @@
 import itertools
+import json
 import random
 import tarfile
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence, Annotated
 
@@ -10,16 +10,20 @@ import numpy as np
 import typer
 
 from encode import encode_file
+from utils.fileinfo import FileInfo
+from utils.json_decoders import decode_file_info
+from utils.json_encoders import CustomJSONEncoder
 
 
-@dataclass(frozen=True)
-class FileInfo:
-    tarfile: Path
-    filename: str
-
-
-def sample[T](data: Sequence[T], k: int) -> tuple[list[T], list[T]]:
-    testing = random.sample(data, k)
+def sample_testing_data[T](data: Sequence[T], k: int, input_directory: Path) -> tuple[list[T], list[T]]:
+    test_sample_path = input_directory / "test.json"
+    if test_sample_path.exists():
+        with test_sample_path.open("r") as f:
+            testing = json.load(f, object_hook=decode_file_info)
+    else:
+        testing = random.sample(data, k)
+        with test_sample_path.open("w") as f:
+            json.dump(testing, f, cls=CustomJSONEncoder)
     training = list(set(data) - set(testing))
     return training, testing
 
@@ -129,7 +133,7 @@ def main(
     batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
 ):
     files = get_sgf_files(input_directory)
-    training, testing = sample(list(files), test_size)
+    training, testing = sample_testing_data(list(files), test_size, input_directory)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
     model = train(training, testing, batch_size)

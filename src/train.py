@@ -8,6 +8,7 @@ from typing import Iterable, Sequence, Annotated
 import keras
 import numpy as np
 import typer
+from keras.api.callbacks import ModelCheckpoint
 
 from encode import encode_file
 from utils.fileinfo import FileInfo
@@ -81,6 +82,7 @@ def train(
     training_files: Iterable[FileInfo],
     testing_files: Iterable[FileInfo],
     batch_size: int,
+    output_directory: Path,
 ) -> keras.Model:
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
@@ -118,6 +120,7 @@ def train(
         epochs=15,
         verbose=1,
         validation_data=batches(testing_data, batch_size),
+        callbacks=[ModelCheckpoint(output_directory / "{epoch}.h5")],
     )
     return model
 
@@ -139,7 +142,7 @@ def main(
     training, testing = sample_testing_data(list(files), test_size, input_directory)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
-    model = train(training, testing, batch_size)
+    model = train(training, testing, batch_size, output_directory)
     evaluate(model, testing)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.h5"

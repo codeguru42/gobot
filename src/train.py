@@ -120,7 +120,7 @@ def train(
         epochs=15,
         verbose=1,
         validation_data=batches(testing_data, batch_size),
-        callbacks=[ModelCheckpoint(output_directory / "{epoch}.h5")],
+        callbacks=[ModelCheckpoint(output_directory / "{epoch}.keras")],
     )
     return model
 
@@ -145,7 +145,7 @@ def main(
     model = train(training, testing, batch_size, output_directory)
     evaluate(model, testing)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
-    model_file = output_directory / "final.h5"
+    model_file = output_directory / "final.keras"
     model.save(model_file)
 
 

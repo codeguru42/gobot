@@ -69,7 +69,7 @@ def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
 
 
 def batches(data, batch_size):
-    for batch in grouper(data, batch_size):
+    for batch in grouper(data, batch_size, incomplete="ignore"):
         features = []
         labels = []
         for feature, label in batch:

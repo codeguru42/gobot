@@ -8,7 +8,7 @@ from typing import Iterable, Sequence, Annotated
 import keras
 import numpy as np
 import typer
-from keras.api.callbacks import ModelCheckpoint
+from keras.api.callbacks import BackupAndRestore
 
 from encode import encode_file
 from models import get_sequential_model
@@ -97,7 +97,7 @@ def train(
         epochs=15,
         verbose=1,
         validation_data=batches(testing_data, batch_size),
-        callbacks=[ModelCheckpoint(output_directory / "{epoch}.keras")],
+        callbacks=[BackupAndRestore(output_directory)],
     )
     return model
 

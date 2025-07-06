@@ -11,6 +11,7 @@ import typer
 from keras.api.callbacks import ModelCheckpoint
 
 from encode import encode_file
+from models import get_sequential_model
 from utils.fileinfo import FileInfo
 from utils.json_decoders import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
@@ -79,6 +80,7 @@ def batches(data, batch_size):
 
 
 def train(
+    model: keras.models.Model,
     training_files: Iterable[FileInfo],
     testing_files: Iterable[FileInfo],
     batch_size: int,
@@ -86,31 +88,6 @@ def train(
 ) -> keras.Model:
     training_data = encode_from_file_info(training_files)
     testing_data = encode_from_file_info(testing_files)
-
-    input_shape = (1, 19, 19)
-    model = keras.Sequential(
-        [
-            keras.layers.Input(input_shape),
-            keras.layers.ZeroPadding2D(padding=3, data_format="channels_first"),
-            keras.layers.Conv2D(48, (7, 7), data_format="channels_first"),
-            keras.layers.Activation("relu"),
-            keras.layers.ZeroPadding2D(padding=2, data_format="channels_first"),
-            keras.layers.Conv2D(32, (5, 5), data_format="channels_first"),
-            keras.layers.Activation("relu"),
-
-            keras.layers.ZeroPadding2D(padding=2, data_format="channels_first"),
-            keras.layers.Conv2D(32, (5, 5), data_format="channels_first"),
-            keras.layers.Activation("relu"),
-
-            keras.layers.ZeroPadding2D(padding=2, data_format="channels_first"),
-            keras.layers.Conv2D(32, (5, 5), data_format="channels_first"),
-            keras.layers.Activation("relu"),
-
-            keras.layers.Flatten(),
-            keras.layers.Dense(361),
-            keras.layers.Activation("relu"),
-        ]
-    )
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
@@ -142,7 +119,9 @@ def main(
     training, testing = sample_testing_data(list(files), test_size, input_directory)
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
-    model = train(training, testing, batch_size, output_directory)
+    input_shape = (1, 19, 19)
+    model = get_sequential_model(input_shape)
+    model = train(model, training, testing, batch_size, output_directory)
     evaluate(model, testing)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.keras"

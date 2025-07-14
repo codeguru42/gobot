@@ -97,7 +97,7 @@ def train(
         epochs=15,
         verbose=1,
         validation_data=batches(testing_data, batch_size),
-        callbacks=[BackupAndRestore(output_directory)],
+        callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
     )
     return model
 

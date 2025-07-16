@@ -22,8 +22,8 @@ from go.gotypes import Point, Player
 )
 def test_is_point_an_eye(
     filename_board: Path,
-    num_rows,
-    num_cols,
+    num_rows: int,
+    num_cols: int,
     board: Board,
     point: Point,
     color: Player,

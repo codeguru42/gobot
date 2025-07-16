@@ -16,7 +16,7 @@ def board(filename_board: str | Path, num_rows: int, num_cols: int) -> Board:
     return read_board(filename_board, num_cols, num_rows)
 
 
-def read_board(filename, num_cols, num_rows):
+def read_board(filename: str | Path, num_cols: int, num_rows: int):
     b = Board(num_rows, num_cols)
     with open(filename, "r") as f:
         for r, line in enumerate(f, start=1):

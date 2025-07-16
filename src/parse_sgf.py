@@ -1,6 +1,6 @@
-import typer
 from pathlib import Path
-from typing import Optional
+
+import typer
 
 from sgf.parser import Collection, GameTree, Node, Property, Sequence, UnexpectedTokenException, parse_sgf
 from sgf.tokenizer import Token, tokens

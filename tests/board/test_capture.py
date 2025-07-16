@@ -8,7 +8,7 @@ from tests.board.conftest import board_expected
 
 
 @pytest.mark.parametrize(
-    "filename,filename_expected,num_rows,num_cols,player,point",
+    "filename_board,filename_expected,num_rows,num_cols,player,point",
     [
         (
             Path(__file__).parent.parent / "data" / "board1.txt",
@@ -39,7 +39,7 @@ from tests.board.conftest import board_expected
 def test_capture(
     board: Board,
     board_expected: Board,
-    filename: Path,
+    filename_board: Path,
     filename_expected: Path,
     num_rows: int,
     num_cols: int,

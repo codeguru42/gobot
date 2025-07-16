@@ -8,7 +8,7 @@ from test_minimax_agent import game_state
 
 
 @pytest.mark.parametrize(
-    "filename,num_rows,num_cols,next_player,point",
+    "filename_board,num_rows,num_cols,next_player,point",
     [
         (
             Path(__file__).parent.parent / "data" / "board1.txt",
@@ -42,7 +42,7 @@ from test_minimax_agent import game_state
 )
 def test_valid_move(
     game_state: GameState,
-    filename: Path,
+    filename_board: Path,
     num_rows: int,
     num_cols: int,
     next_player: Player,

@@ -8,7 +8,7 @@ from go.gotypes import Point, Player
 
 
 @pytest.mark.parametrize(
-    "filename,num_rows,num_cols,point,color,expected",
+    "filename_board,num_rows,num_cols,point,color,expected",
     [
         (
             Path(__file__).parent.parent / "data" / "board-eyes.txt",
@@ -21,7 +21,7 @@ from go.gotypes import Point, Player
     ],
 )
 def test_is_point_an_eye(
-    filename: str,
+    filename_board: Path,
     num_rows,
     num_cols,
     board: Board,

@@ -17,10 +17,10 @@ def minimax_agent() -> MinimaxAgent:
 
 
 @pytest.mark.parametrize(
-    "filename,num_rows,num_cols,next_player", [("board1.txt", 9, 9, Player.BLACK)]
+    "filename_board,num_rows,num_cols,next_player", [("board1.txt", 9, 9, Player.BLACK)]
 )
 def test_board1(
-    filename: str,
+    filename_board: str,
     num_rows: int,
     num_cols: int,
     next_player: Player,
@@ -31,10 +31,10 @@ def test_board1(
 
 
 @pytest.mark.parametrize(
-    "filename,num_rows,num_cols,next_player", [("board2.txt", 9, 9, Player.WHITE)]
+    "filename_board,num_rows,num_cols,next_player", [("board2.txt", 9, 9, Player.WHITE)]
 )
 def test_board2(
-    filename: str,
+    filename_board: str,
     num_rows: int,
     num_cols: int,
     next_player: Player,

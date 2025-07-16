@@ -12,7 +12,7 @@ from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
 
 
-def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
+def extract_files(input_directory: Path) -> Iterable[IO[bytes]]:
     for file in input_directory.glob("*.tar.gz"):
         typer.echo(f"Extracting {file.name}")
         with tarfile.open(file, "r:gz") as tar:
@@ -21,7 +21,7 @@ def extract_files(input_directory: Path) -> Iterable[Optional[IO[bytes]]]:
                     yield tar.extractfile(member)
 
 
-def parse_file(sgf_file: Optional[IO[bytes]]) -> Collection:
+def parse_file(sgf_file: IO[bytes]) -> Collection:
     typer.echo("\n****")
     typer.echo(f"Parsing {sgf_file.name}")
     content = sgf_file.read().decode("utf-8")
@@ -48,7 +48,7 @@ def encode_games(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
 
 
 def encode_file(
-    sgf_file: Optional[IO[bytes]],
+    sgf_file: IO[bytes],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     collection = parse_file(sgf_file)
     game_states = replay_game(collection)
@@ -56,7 +56,7 @@ def encode_file(
 
 
 def encode_all_files(
-    sgf_files: Iterable[Optional[IO[bytes]]],
+    sgf_files: Iterable[IO[bytes]],
 ) -> Iterable[tuple[str, Iterable[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
         yield file.name, encode_file(file)

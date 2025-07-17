@@ -2,8 +2,10 @@ from pathlib import Path
 
 import pytest
 
+from encode import replay_game
 from go.goboard import Board, GameState
 from go.gotypes import Player, Point
+from sgf import tokenizer, parser
 
 
 @pytest.fixture
@@ -29,3 +31,10 @@ def read_board(filename: str | Path, num_cols: int, num_rows: int):
                     case ".":
                         pass
     return b
+
+def game_state_from_sgf(filename: str | Path):
+    with open(filename, "r") as f:
+        tokens = tokenizer.tokens(f)
+        sgf_collection = parser.parse_sgf(tokens)
+        game_state = replay_game(sgf_collection)
+        return game_state.board

@@ -11,14 +11,14 @@ class DeepLearningAgent(Agent):
         self.model = model
         self.encoder = encoder
 
-    def predict(self, game_state):
+    def predict(self, game_state: GameState):
         encoded_state = self.encoder.encode(game_state)
         tensor = np.array([encoded_state])
-        return self.model.predict(tensor)
+        return self.model.predict(tensor)[0]
 
     def select_move(self, game_state: GameState):
         move_count = self.encoder.board_width * self.encoder.board_height
-        raw_probs = self.model.predict(game_state)
+        raw_probs = self.predict(game_state)
         eps = 1e-6
         clipped_probs = np.clip(raw_probs**3, eps, 1 - eps)
         probs = clipped_probs / np.sum(clipped_probs)

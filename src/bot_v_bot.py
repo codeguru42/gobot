@@ -1,6 +1,11 @@
+from pathlib import Path
 from typing import Optional
 
-from agents.mcts_agent import MCTSAgent
+import typer
+from tensorflow.keras import models
+
+from agents.deep_learning_agent import DeepLearningAgent
+from encoders.oneplane import OnePlaneEncoder
 from go.goboard import GameState
 from go.gotypes import Player
 from utils.print import print_board, print_move
@@ -13,14 +18,14 @@ STONE_TO_CHAR: dict[Optional[Player], str] = {
 }
 
 
-def main():
-    board_size = 9
+def main(model_path: Path):
+    board_size = 19
     game = GameState.new_game(board_size)
-    num_rounds = 5
-    temperature = 1.5
+    model = models.load_model(model_path)
+    encoder = OnePlaneEncoder((board_size, board_size))
     bots = {
-        Player.BLACK: MCTSAgent(num_rounds, temperature),
-        Player.WHITE: MCTSAgent(num_rounds, temperature),
+        Player.BLACK: DeepLearningAgent(model, encoder),
+        Player.WHITE: DeepLearningAgent(model, encoder),
     }
     while not game.is_over():
         print(chr(27) + "[2J")
@@ -32,4 +37,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    typer.run(main)

@@ -82,12 +82,11 @@ def batches(data, batch_size):
 def train(
     model: keras.models.Model,
     training_files: Iterable[FileInfo],
-    testing_files: Iterable[FileInfo],
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
+    typer.echo("Training model")
     training_data = encode_from_file_info(training_files)
-    testing_data = encode_from_file_info(testing_files)
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
@@ -96,15 +95,16 @@ def train(
         batches(training_data, batch_size),
         epochs=15,
         verbose=1,
-        validation_data=batches(testing_data, batch_size),
         callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
     )
     return model
 
 
-def evaluate(model: keras.Model, testing_files: Iterable[FileInfo]):
+def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: int):
+    typer.echo("Evaluating model")
     testing_data = encode_from_file_info(testing_files)
-    score = model.evaluate(testing_data, verbose=0)
+    testing_batches = batches(testing_data, batch_size)
+    score = model.evaluate(testing_batches, verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
 
@@ -121,8 +121,8 @@ def main(
     typer.echo(f"Testing {len(testing)} samples")
     input_shape = (1, 19, 19)
     model = get_sequential_model(input_shape)
-    model = train(model, training, testing, batch_size, output_directory)
-    evaluate(model, testing)
+    model = train(model, training, batch_size, output_directory)
+    evaluate(model, testing, batch_size)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.keras"
     model.save(model_file)

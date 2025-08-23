@@ -28,9 +28,7 @@ def get_large_model(input_shape: tuple[int, int, int]):
     return keras.Sequential(
         [
             keras.layers.Input(input_shape),
-            keras.layers.ZeroPadding2D(
-                (3, 3), input_shape=input_shape, data_format="channels_first"
-            ),
+            keras.layers.ZeroPadding2D((3, 3), data_format="channels_first"),
             keras.layers.Conv2D(
                 64, (7, 7), padding="valid", data_format="channels_first"
             ),

@@ -125,18 +125,20 @@ def main(
 ):
     files = get_sgf_files(input_directory)
     test_sample_file = input_directory / "test.json"
-    training, testing = sample_data(list(files), test_size, test_sample_file)
-    validation_sample_file = input_directory / "test.json"
-    training, validation = sample_data(
-        list(training), test_size, validation_sample_file
+    training_files, testing_files = sample_data(
+        list(files), test_size, test_sample_file
     )
-    typer.echo(f"\nTraining {len(training)} samples")
-    typer.echo(f"Testing {len(testing)} samples")
-    typer.echo(f"Validation {len(validation)} samples")
+    validation_sample_file = input_directory / "test.json"
+    training_files, validation_files = sample_data(
+        list(training_files), test_size, validation_sample_file
+    )
+    typer.echo(f"\nTraining {len(training_files)} samples")
+    typer.echo(f"Testing {len(testing_files)} samples")
+    typer.echo(f"Validation {len(validation_files)} samples")
     input_shape = (1, 19, 19)
     model = get_large_model(input_shape)
-    model = train(model, training, validation, batch_size, output_directory)
-    evaluate(model, testing, batch_size)
+    model = train(model, training_files, validation_files, batch_size, output_directory)
+    evaluate(model, testing_files, batch_size)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.keras"
     model.save(model_file)

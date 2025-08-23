@@ -3,10 +3,11 @@ import json
 import random
 import tarfile
 from pathlib import Path
-from typing import Iterable, Sequence, Annotated
+from typing import Iterable, Sequence, Annotated, Callable
 
 import keras
 import numpy as np
+import tensorflow as tf
 import typer
 from keras.api.callbacks import BackupAndRestore
 from numpy import ndarray
@@ -61,6 +62,15 @@ def encode_from_file_info_generator(
         yield from encode_from_file_info(file_info)
 
 
+def build_encode_generator(
+    files: Iterable[FileInfo],
+) -> Callable[[], Iterable[tuple[ndarray, ndarray]]]:
+    def f() -> Iterable[tuple[ndarray, ndarray]]:
+        return encode_from_file_info_generator(files)
+
+    return f
+
+
 def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
     """Collect data into non-overlapping fixed-length chunks or blocks."""
     # grouper('ABCDEFG', 3, fillvalue='x') → ABC DEF Gxx
@@ -96,15 +106,29 @@ def train(
     output_directory: Path,
 ) -> keras.Model:
     typer.echo("Training model")
-    training_data = encode_from_file_info_generator(training_files)
-    validation_data = encode_from_file_info_generator(validation_files)
+    training_data_generator = build_encode_generator(training_files)
+    training_dataset = tf.data.Dataset.from_generator(
+        training_data_generator,
+        output_signature=(
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
+            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+        ),
+    )
+    validation_data_generator = build_encode_generator(validation_files)
+    validation_dataset = tf.data.Dataset.from_generator(
+        validation_data_generator,
+        output_signature=(
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
+            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+        ),
+    )
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
     )
     model.fit(
-        batches(training_data, batch_size),
-        validation_data=validation_data,
+        training_dataset.batch(batch_size),
+        validation_data=validation_dataset.batch(batch_size),
         epochs=15,
         verbose=2,
         callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
@@ -114,9 +138,15 @@ def train(
 
 def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: int):
     typer.echo("Evaluating model")
-    testing_data = encode_from_file_info_generator(testing_files)
-    testing_batches = batches(testing_data, batch_size)
-    score = model.evaluate(testing_batches, verbose=0)
+    testing_data_generator = build_encode_generator(testing_files)
+    testing_dataset = tf.data.Dataset.from_generator(
+        testing_data_generator,
+        output_signature=(
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
+            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+        ),
+    )
+    score = model.evaluate(testing_dataset.batch(batch_size), verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
 

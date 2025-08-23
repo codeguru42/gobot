@@ -9,6 +9,7 @@ import keras
 import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
+from numpy import ndarray
 
 from encode import encode_file
 from models import get_large_model
@@ -40,14 +41,20 @@ def get_sgf_files(data_directory: Path) -> Iterable[FileInfo]:
 
 
 def encode_from_file_info(
+    file_info: FileInfo,
+) -> Iterable[tuple[ndarray, ndarray]]:
+    with tarfile.open(file_info.tarfile) as tar:
+        sgf_file = tar.extractfile(file_info.filename)
+        if sgf_file is None:
+            yield from []
+        yield from encode_file(sgf_file)
+
+
+def encode_from_file_info_generator(
     files: Iterable[FileInfo],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for file_info in files:
-        with tarfile.open(file_info.tarfile) as tar:
-            sgf_file = tar.extractfile(file_info.filename)
-            if sgf_file is None:
-                continue
-            yield from encode_file(sgf_file)
+        yield from encode_from_file_info(file_info)
 
 
 def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
@@ -85,8 +92,8 @@ def train(
     output_directory: Path,
 ) -> keras.Model:
     typer.echo("Training model")
-    training_data = encode_from_file_info(training_files)
-    validation_data = encode_from_file_info(validation_files)
+    training_data = encode_from_file_info_generator(training_files)
+    validation_data = encode_from_file_info_generator(validation_files)
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
@@ -103,7 +110,7 @@ def train(
 
 def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: int):
     typer.echo("Evaluating model")
-    testing_data = encode_from_file_info(testing_files)
+    testing_data = encode_from_file_info_generator(testing_files)
     testing_batches = batches(testing_data, batch_size)
     score = model.evaluate(testing_batches, verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")

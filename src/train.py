@@ -17,16 +17,15 @@ from utils.json_decoders import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
 
 
-def sample_testing_data[T](
-    data: Sequence[T], k: int, input_directory: Path
+def sample_data[T](
+    data: Sequence[T], k: int, sample_file: Path
 ) -> tuple[list[T], list[T]]:
-    test_sample_path = input_directory / "test.json"
-    if test_sample_path.exists():
-        with test_sample_path.open("r") as f:
+    if sample_file.exists():
+        with sample_file.open("r") as f:
             testing = json.load(f, object_hook=decode_file_info)
     else:
         testing = random.sample(data, k)
-        with test_sample_path.open("w") as f:
+        with sample_file.open("w") as f:
             json.dump(testing, f, cls=CustomJSONEncoder)
     training = list(set(data) - set(testing))
     return training, testing
@@ -82,17 +81,20 @@ def batches(data, batch_size):
 def train(
     model: keras.models.Model,
     training_files: Iterable[FileInfo],
+    validation_files: Iterable[FileInfo],
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
     typer.echo("Training model")
     training_data = encode_from_file_info(training_files)
+    validation_data = encode_from_file_info(validation_files)
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
     )
     model.fit(
         batches(training_data, batch_size),
+        validation_data=validation_data,
         epochs=15,
         verbose=1,
         callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
@@ -116,12 +118,17 @@ def main(
     batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
 ):
     files = get_sgf_files(input_directory)
-    training, testing = sample_testing_data(list(files), test_size, input_directory)
+    test_sample_file = input_directory / "test.json"
+    training, testing = sample_data(list(files), test_size, test_sample_file)
+    validation_sample_file = input_directory / "test.json"
+    training, validation = sample_data(
+        list(training), test_size, validation_sample_file
+    )
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
     input_shape = (1, 19, 19)
     model = get_large_model(input_shape)
-    model = train(model, training, batch_size, output_directory)
+    model = train(model, training, validation, batch_size, output_directory)
     evaluate(model, testing, batch_size)
     output_directory.parent.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.keras"

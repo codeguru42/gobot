@@ -11,7 +11,7 @@ import typer
 from keras.api.callbacks import BackupAndRestore
 
 from encode import encode_file
-from models import get_small_model
+from models import get_large_model
 from utils.fileinfo import FileInfo
 from utils.json_decoders import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
@@ -120,7 +120,7 @@ def main(
     typer.echo(f"\nTraining {len(training)} samples")
     typer.echo(f"Testing {len(testing)} samples")
     input_shape = (1, 19, 19)
-    model = get_small_model(input_shape)
+    model = get_large_model(input_shape)
     model = train(model, training, batch_size, output_directory)
     evaluate(model, testing, batch_size)
     output_directory.parent.mkdir(parents=True, exist_ok=True)

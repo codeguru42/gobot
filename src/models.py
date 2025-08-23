@@ -54,7 +54,7 @@ def get_large_model(input_shape: tuple[int, int, int]):
             keras.layers.Conv2D(32, (5, 5), data_format="channels_first"),
             keras.layers.Activation("relu"),
             keras.layers.Flatten(),
-            keras.layers.Dense(1024),
+            keras.layers.Dense(361),
             keras.layers.Activation("relu"),
         ]
     )

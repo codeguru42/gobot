@@ -43,7 +43,6 @@ def encode_from_file_info(
     files: Iterable[FileInfo],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for file_info in files:
-        # typer.echo(f"\nEncoding {file_info}")
         with tarfile.open(file_info.tarfile) as tar:
             sgf_file = tar.extractfile(file_info.filename)
             if sgf_file is None:

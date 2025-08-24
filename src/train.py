@@ -119,10 +119,10 @@ def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: 
 
 def main(
     input_directory: Path,
-    output_directory: Path,
     test_size: Annotated[int, typer.Option("--test_size")] = 100,
     batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
 ):
+    output_directory = input_directory / "model"
     files = get_sgf_files(input_directory)
     test_sample_file = input_directory / "test.json"
     training_files, testing_files = sample_data(

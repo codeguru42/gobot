@@ -136,9 +136,9 @@ def main(
     training_files, validation_files = sample_data(
         list(training_files), test_size, validation_sample_file
     )
-    typer.echo(f"\nTraining {len(training_files)} samples")
-    typer.echo(f"Testing {len(testing_files)} samples")
-    typer.echo(f"Validation {len(validation_files)} samples")
+    typer.echo(f"\nTraining {len(training_files)} games")
+    typer.echo(f"Testing {len(testing_files)} games")
+    typer.echo(f"Validation {len(validation_files)} games")
     input_shape = (1, 19, 19)
     model = get_large_model(input_shape)
     model = train(model, training_files, validation_files, batch_size, output_directory)

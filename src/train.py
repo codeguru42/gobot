@@ -34,10 +34,14 @@ def sample_data[T](
 
 def get_sgf_files(data_directory: Path) -> Iterable[FileInfo]:
     for file in data_directory.glob("*.tar.gz"):
-        with tarfile.open(file, "r:gz") as tar:
-            for member in tar.getmembers():
-                if member.isfile():
-                    yield FileInfo(file.absolute(), member.name)
+        yield from get_file_info(file)
+
+
+def get_file_info(file):
+    with tarfile.open(file, "r:gz") as tar:
+        for member in tar.getmembers():
+            if member.isfile():
+                yield FileInfo(file.absolute(), member.name)
 
 
 def encode_from_file_info(

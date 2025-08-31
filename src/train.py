@@ -132,7 +132,7 @@ def main(
     training_files, testing_files = sample_data(
         list(files), test_size, test_sample_file
     )
-    validation_sample_file = input_directory / "test.json"
+    validation_sample_file = input_directory / "validation.json"
     training_files, validation_files = sample_data(
         list(training_files), test_size, validation_sample_file
     )

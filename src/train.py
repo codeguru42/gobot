@@ -143,7 +143,7 @@ def main(
     model = get_large_model(input_shape)
     model = train(model, training_files, validation_files, batch_size, output_directory)
     evaluate(model, testing_files, batch_size)
-    output_directory.parent.mkdir(parents=True, exist_ok=True)
+    output_directory.mkdir(parents=True, exist_ok=True)
     model_file = output_directory / "final.keras"
     model.save(model_file)
 

@@ -110,16 +110,16 @@ def train(
     training_dataset = tf.data.Dataset.from_generator(
         training_data_generator,
         output_signature=(
-            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
-            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.uint8),
+            tf.TensorSpec(shape=(361,), dtype=tf.uint8),
         ),
     )
     validation_data_generator = build_encode_generator(validation_files)
     validation_dataset = tf.data.Dataset.from_generator(
         validation_data_generator,
         output_signature=(
-            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
-            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.uint8),
+            tf.TensorSpec(shape=(361,), dtype=tf.uint8),
         ),
     )
 
@@ -142,8 +142,8 @@ def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: 
     testing_dataset = tf.data.Dataset.from_generator(
         testing_data_generator,
         output_signature=(
-            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.float32),
-            tf.TensorSpec(shape=(361,), dtype=tf.float32),
+            tf.TensorSpec(shape=(1, 19, 19), dtype=tf.uint8),
+            tf.TensorSpec(shape=(361,), dtype=tf.uint8),
         ),
     )
     score = model.evaluate(testing_dataset.batch(batch_size), verbose=0)

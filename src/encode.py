@@ -82,7 +82,8 @@ def save_encodings(
             typer.echo(e)
 
 
-def main(input_directory: Path, output_directory: Path):
+def main(input_directory: Path):
+    output_directory = input_directory / "encodings"
     typer.echo(f"Extracting files from {input_directory}")
     sgf_files = extract_files(input_directory)
     typer.echo("Encoding games...")

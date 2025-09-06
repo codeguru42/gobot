@@ -14,7 +14,7 @@ class OnePlaneEncoder(Encoder):
         return "oneplane"
 
     def encode(self, game_state: GameState) -> np.ndarray:
-        board_matrix = np.zeros(self.shape())
+        board_matrix = np.zeros(self.shape(), dtype=np.uint8)
         next_player = game_state.next_player
         for r in range(self.board_height):
             for c in range(self.board_width):
@@ -30,7 +30,7 @@ class OnePlaneEncoder(Encoder):
 
     def encode_point(self, point: Point) -> np.ndarray:
         index = self.board_width * (point.row - 1) + (point.col - 1)
-        move_one_hot = np.zeros(self.num_points())
+        move_one_hot = np.zeros(self.num_points(), dtype=np.uint8)
         move_one_hot[index] = 1
         return move_one_hot
 

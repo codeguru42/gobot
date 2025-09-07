@@ -1,4 +1,5 @@
 import tarfile
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, IO
 
@@ -11,6 +12,19 @@ from go.goboard import GameState
 from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
+
+
+@dataclass
+class GameMetadata:
+    name: str
+    move_count: int
+
+
+@dataclass
+class TarfileMetadata:
+    path: Path
+    game_count: int
+    games: GameMetadata
 
 
 def extract_all_files(

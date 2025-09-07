@@ -66,22 +66,21 @@ def save_encodings(
     encodings: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
     output_directory: Path,
 ) -> None:
-    feature_base = output_directory / "features"
-    label_base = output_directory / "labels"
+    data = {}
     for file_name, encs in encodings:
         try:
             typer.echo(f"Saving {file_name}")
             features, labels = zip(*encs)
             sgf_path = Path(file_name)
-            feature_path = feature_base / sgf_path.parent
-            feature_path.mkdir(parents=True, exist_ok=True)
-            label_path = label_base / sgf_path.parent
-            label_path.mkdir(parents=True, exist_ok=True)
-            np.save(feature_path / sgf_path.stem, np.concatenate(features))
-            np.save(label_path / sgf_path.stem, np.concatenate(labels))
+            feature_path = sgf_path.parent / f'features_{sgf_path.stem}'
+            data[str(feature_path)] = features
+            label_path = sgf_path.parent / f'labels_{sgf_path.stem}'
+            data[str(label_path)] = labels
         except Exception as e:
             typer.echo("ERROR: Skipping.")
             typer.echo(e)
+    output_directory.mkdir(parents=True, exist_ok=True)
+    np.savez(output_directory / "encodings.npz", **data)
 
 
 def main(input_directory: Path):

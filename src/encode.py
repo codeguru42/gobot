@@ -1,6 +1,6 @@
 import tarfile
 from pathlib import Path
-from typing import Iterable, IO, Optional
+from typing import Iterable, IO
 
 import numpy as np
 import typer

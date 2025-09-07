@@ -32,7 +32,9 @@ def replay_game(
     return visit_collection(collection)
 
 
-def encode_games(games) -> Iterable[tuple[np.ndarray, np.ndarray]]:
+def encode_games(
+    games: Iterable[Iterable[GameState]],
+) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for game in games:
         for game_state in game:
             encoder = get_encoder_by_name(

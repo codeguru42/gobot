@@ -4,6 +4,7 @@ from typing import Iterable, IO
 
 import numpy as np
 import typer
+from numpy import ndarray
 
 from encoders.base import get_encoder_by_name
 from go.goboard import GameState
@@ -12,13 +13,19 @@ from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
 
 
-def extract_files(input_directory: Path) -> Iterable[IO[bytes]]:
+def extract_all_files(
+    input_directory: Path,
+) -> Iterable[tuple[Path, Iterable[IO[bytes]]]]:
     for file in input_directory.glob("*.tar.gz"):
         typer.echo(f"Extracting {file.name}")
-        with tarfile.open(file, "r:gz") as tar:
-            for member in tar.getmembers():
-                if member.isfile():
-                    yield tar.extractfile(member)
+        yield file, extract_files(file)
+
+
+def extract_files(file: Path) -> Iterable[IO[bytes]]:
+    with tarfile.open(file, "r:gz") as tar:
+        for member in tar.getmembers():
+            if member.isfile():
+                yield tar.extractfile(member)
 
 
 def parse_file(sgf_file: IO[bytes]) -> Collection:
@@ -62,33 +69,42 @@ def encode_all_files(
         yield file.name, encode_file(file)
 
 
+def encode_tar_files(
+    extracted_files: Iterable[tuple[Path, Iterable[IO[bytes]]]],
+) -> Iterable[tuple[Path, Iterable[tuple[str, list[tuple[ndarray, ndarray]]]]]]:
+    for tar_file, sgf_files in extracted_files:
+        yield tar_file, encode_all_files(sgf_files)
+
+
 def save_encodings(
-    encodings: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
+    encodings: Iterable[tuple[Path, Iterable[tuple[str, list[tuple[ndarray, ndarray]]]]]],
     output_directory: Path,
 ) -> None:
     data = {}
-    for file_name, encs in encodings:
+    for tarfile_path, contents in encodings:
         try:
-            typer.echo(f"Saving {file_name}")
-            features, labels = zip(*encs)
-            sgf_path = Path(file_name)
-            feature_path = sgf_path.parent / f'features_{sgf_path.stem}'
-            data[str(feature_path)] = features
-            label_path = sgf_path.parent / f'labels_{sgf_path.stem}'
-            data[str(label_path)] = labels
+            typer.echo(f"Saving encodings for {tarfile_path}")
+            for file_name, encs in contents:
+                features, labels = zip(*encs)
+                sgf_path = Path(file_name)
+                feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
+                data[str(feature_path)] = features
+                label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
+                data[str(label_path)] = labels
         except Exception as e:
             typer.echo("ERROR: Skipping.")
             typer.echo(e)
-    output_directory.mkdir(parents=True, exist_ok=True)
-    np.savez(output_directory / "encodings.npz", **data)
+        output_directory.mkdir(parents=True, exist_ok=True)
+        output_path = output_directory / tarfile_path.stem
+        np.savez(output_path, **data)
 
 
 def main(input_directory: Path):
     output_directory = input_directory / "encodings"
     typer.echo(f"Extracting files from {input_directory}")
-    sgf_files = extract_files(input_directory)
+    extracted_files = extract_all_files(input_directory)
     typer.echo("Encoding games...")
-    encodings = encode_all_files(sgf_files)
+    encodings = encode_tar_files(extracted_files)
     typer.echo("Saving encodings...")
     save_encodings(encodings, output_directory)
 

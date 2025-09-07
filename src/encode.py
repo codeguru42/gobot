@@ -76,27 +76,35 @@ def encode_tar_files(
         yield tar_file, encode_all_files(sgf_files)
 
 
-def save_encodings(
+def save_all_encodings(
     encodings: Iterable[tuple[Path, Iterable[tuple[str, list[tuple[ndarray, ndarray]]]]]],
     output_directory: Path,
 ) -> None:
-    data = {}
     for tarfile_path, contents in encodings:
-        try:
-            typer.echo(f"Saving encodings for {tarfile_path}")
-            for file_name, encs in contents:
-                features, labels = zip(*encs)
-                sgf_path = Path(file_name)
-                feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
-                data[str(feature_path)] = features
-                label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
-                data[str(label_path)] = labels
-        except Exception as e:
-            typer.echo("ERROR: Skipping.")
-            typer.echo(e)
-        output_directory.mkdir(parents=True, exist_ok=True)
-        output_path = output_directory / tarfile_path.stem
-        np.savez(output_path, **data)
+        save_encodings(tarfile_path, contents, output_directory)
+
+
+def save_encodings(
+        tarfile_path: Path,
+        contents: Iterable[tuple[str, list[tuple[ndarray, ndarray]]]],
+        output_directory: Path
+        ):
+    data = {}
+    try:
+        typer.echo(f"Saving encodings for {tarfile_path}")
+        for file_name, encs in contents:
+            features, labels = zip(*encs)
+            sgf_path = Path(file_name)
+            feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
+            data[str(feature_path)] = features
+            label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
+            data[str(label_path)] = labels
+    except Exception as e:
+        typer.echo("ERROR: Skipping.")
+        typer.echo(e)
+    output_directory.mkdir(parents=True, exist_ok=True)
+    output_path = output_directory / tarfile_path.stem
+    np.savez(output_path, **data)
 
 
 def main(input_directory: Path):
@@ -106,7 +114,7 @@ def main(input_directory: Path):
     typer.echo("Encoding games...")
     encodings = encode_tar_files(extracted_files)
     typer.echo("Saving encodings...")
-    save_encodings(encodings, output_directory)
+    save_all_encodings(encodings, output_directory)
 
 
 if __name__ == "__main__":

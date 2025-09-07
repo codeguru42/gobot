@@ -77,7 +77,9 @@ def encode_tar_files(
 
 
 def save_all_encodings(
-    encodings: Iterable[tuple[Path, Iterable[tuple[str, list[tuple[ndarray, ndarray]]]]]],
+    encodings: Iterable[
+        tuple[Path, Iterable[tuple[str, list[tuple[ndarray, ndarray]]]]]
+    ],
     output_directory: Path,
 ) -> None:
     for tarfile_path, contents in encodings:
@@ -85,10 +87,10 @@ def save_all_encodings(
 
 
 def save_encodings(
-        tarfile_path: Path,
-        contents: Iterable[tuple[str, list[tuple[ndarray, ndarray]]]],
-        output_directory: Path
-        ):
+    tarfile_path: Path,
+    contents: Iterable[tuple[str, list[tuple[ndarray, ndarray]]]],
+    output_directory: Path,
+):
     data = {}
     try:
         typer.echo(f"Saving encodings for {tarfile_path}")
@@ -96,9 +98,9 @@ def save_encodings(
             features, labels = zip(*encs)
             sgf_path = Path(file_name)
             feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
-            data[str(feature_path)] = features
+            data[str(feature_path)] = np.concatenate(features)
             label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
-            data[str(label_path)] = labels
+            data[str(label_path)] = np.concatenate(labels)
     except Exception as e:
         typer.echo("ERROR: Skipping.")
         typer.echo(e)

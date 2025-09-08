@@ -1,6 +1,6 @@
 import json
 import tarfile
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Iterable, IO
 
@@ -113,7 +113,7 @@ def save_encodings(
     metadata_path = output_directory / tarfile_path.stem
     metadata = TarfileMetadata(tarfile_path, len(games), games)
     with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
-        json.dump(metadata, metadata_file)
+        json.dump(asdict(metadata), metadata_file)
 
 
 def process_all_encodings(

@@ -22,7 +22,7 @@ class GameMetadata:
 
 @dataclass
 class TarfileMetadata:
-    path: Path
+    path: str
     game_count: int
     games: list[GameMetadata]
 
@@ -111,7 +111,7 @@ def save_encodings(
     npz_path = output_directory / tarfile_path.stem
     np.savez(npz_path, **data)
     metadata_path = output_directory / tarfile_path.stem
-    metadata = TarfileMetadata(tarfile_path, len(games), games)
+    metadata = TarfileMetadata(str(tarfile_path), len(games), games)
     with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
         json.dump(asdict(metadata), metadata_file)
 
@@ -129,6 +129,7 @@ def process_all_encodings(
         except Exception as e:
             typer.echo("ERROR: Skipping.")
             typer.echo(e)
+            
     return data, games
 
 

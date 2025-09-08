@@ -25,6 +25,9 @@ class TarfileMetadata:
     path: str
     game_count: int
     games: list[GameMetadata]
+    
+    def total_move_count(self):
+        return sum(game.move_count for game in self.games)
 
 
 def extract_all_files(

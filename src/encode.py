@@ -26,7 +26,8 @@ class TarfileMetadata:
     game_count: int
     games: list[GameMetadata]
     
-    def total_move_count(self):
+    @property
+    def move_count(self):
         return sum(game.move_count for game in self.games)
 
 

@@ -1,7 +1,8 @@
+import json
 import tarfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, IO
+from typing import Iterable, IO, Any
 
 import numpy as np
 import typer
@@ -24,7 +25,7 @@ class GameMetadata:
 class TarfileMetadata:
     path: Path
     game_count: int
-    games: GameMetadata
+    games: list[GameMetadata]
 
 
 def extract_all_files(
@@ -105,22 +106,46 @@ def save_encodings(
     contents: Iterable[tuple[str, list[tuple[ndarray, ndarray]]]],
     output_directory: Path,
 ):
-    data = {}
     try:
         typer.echo(f"Saving encodings for {tarfile_path}")
-        for file_name, encs in contents:
-            features, labels = zip(*encs)
-            sgf_path = Path(file_name)
-            feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
-            data[str(feature_path)] = np.concatenate(features)
-            label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
-            data[str(label_path)] = np.concatenate(labels)
+        data, games = process_all_encodings(contents)
+        output_directory.mkdir(parents=True, exist_ok=True)
+        npz_path = output_directory / tarfile_path.stem
+        np.savez(npz_path, **data)
+        metadata_path = output_directory / tarfile_path.stem
+        metadata = TarfileMetadata(tarfile_path, len(games), games)
+        with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
+            json.dump(metadata, metadata_file)
     except Exception as e:
         typer.echo("ERROR: Skipping.")
         typer.echo(e)
-    output_directory.mkdir(parents=True, exist_ok=True)
-    output_path = output_directory / tarfile_path.stem
-    np.savez(output_path, **data)
+
+
+def process_all_encodings(
+    contents: Iterable[tuple[str, list[tuple[ndarray, ndarray]]]],
+) -> tuple[dict[Path, ndarray], list[GameMetadata]]:
+    data = {}
+    games = []
+    for file_name, encs in contents:
+        subdata, move_count = process_encodings(file_name, encs)
+        data.update(subdata)
+        games.append(GameMetadata(file_name, move_count))
+    return data, games
+
+
+def process_encodings(
+    file_name: str,
+    encodings,
+) -> tuple[dict[Path, ndarray], int]:
+    features, labels = zip(*encodings)
+    sgf_path = Path(file_name)
+    feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
+    label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
+    data = {
+        feature_path: np.concatenate(features),
+        label_path: np.concatenate(labels),
+    }
+    return data, len(features)
 
 
 def main(input_directory: Path):

@@ -1,6 +1,6 @@
 import json
 import tarfile
-from dataclasses import dataclass, asdict
+from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable, IO
 
@@ -9,26 +9,10 @@ import typer
 
 from encoders.base import get_encoder_by_name
 from go.goboard import GameState
+from metadata import GameMetadata, TarfileMetadata
 from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
-
-
-@dataclass
-class GameMetadata:
-    name: str
-    move_count: int
-
-
-@dataclass
-class TarfileMetadata:
-    path: str
-    game_count: int
-    games: list[GameMetadata]
-    
-    @property
-    def move_count(self):
-        return sum(game.move_count for game in self.games)
 
 
 def extract_all_files(

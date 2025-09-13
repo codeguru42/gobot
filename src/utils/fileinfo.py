@@ -6,3 +6,7 @@ from pathlib import Path
 class FileInfo:
     tarfile: Path
     filename: str
+
+
+def decode_file_info(data):
+    return FileInfo(tarfile=data['tarfile'], filename=data['filename'])

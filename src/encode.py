@@ -68,7 +68,7 @@ def encode_all_files(
     sgf_files: Iterable[IO[bytes]],
 ) -> Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
-        yield file.name, encode_file(file)
+        yield Path(file.name), encode_file(file)
 
 
 def encode_tar_files(

@@ -1,6 +1,5 @@
 import json
 import tarfile
-from dataclasses import asdict
 from pathlib import Path
 from typing import Iterable, IO
 
@@ -9,10 +8,11 @@ import typer
 
 from encoders.base import get_encoder_by_name
 from go.goboard import GameState
-from metadata import GameMetadata, TarfileMetadata
+from metadata import GameMetadata
 from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
+from utils.json_encoders import CustomJSONEncoder
 
 
 def extract_all_files(
@@ -66,21 +66,21 @@ def encode_file(
 
 def encode_all_files(
     sgf_files: Iterable[IO[bytes]],
-) -> Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]:
+) -> Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
         yield file.name, encode_file(file)
 
 
 def encode_tar_files(
     extracted_files: Iterable[tuple[Path, Iterable[IO[bytes]]]],
-) -> Iterable[tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]]:
+) -> Iterable[tuple[Path, Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]]]:
     for tar_file, sgf_files in extracted_files:
         yield tar_file, encode_all_files(sgf_files)
 
 
 def save_all_encodings(
     encodings: Iterable[
-        tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]
+        tuple[Path, Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]]
     ],
     output_directory: Path,
 ) -> None:
@@ -90,22 +90,22 @@ def save_all_encodings(
 
 def save_encodings(
     tarfile_path: Path,
-    contents: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
+    contents: Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]],
     output_directory: Path,
 ):
     typer.echo(f"Saving encodings for {tarfile_path}")
-    data, games = process_all_encodings(contents)
+    data, games = process_all_encodings(tarfile_path, contents)
     output_directory.mkdir(parents=True, exist_ok=True)
     npz_path = output_directory / tarfile_path.stem
     np.savez(npz_path, **data)
     metadata_path = output_directory / tarfile_path.stem
-    metadata = TarfileMetadata(str(tarfile_path), len(games), games)
     with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
-        json.dump(asdict(metadata), metadata_file)
+        json.dump(games, metadata_file, cls=CustomJSONEncoder)
 
 
 def process_all_encodings(
-    contents: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
+    tarfile: Path,
+    contents: Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]],
 ) -> tuple[dict[Path, np.ndarray], list[GameMetadata]]:
     data = {}
     games = []
@@ -113,20 +113,20 @@ def process_all_encodings(
         try:
             subdata, move_count = process_encodings(file_name, encs)
             data.update(subdata)
-            games.append(GameMetadata(file_name, move_count))
+            games.append(
+                GameMetadata(tarfile=tarfile, sgf_file=file_name, move_count=move_count)
+            )
         except Exception as e:
             typer.echo("ERROR: Skipping.")
             typer.echo(e)
-            
     return data, games
 
 
 def process_encodings(
-    file_name: str,
+    sgf_path: Path,
     encodings,
 ) -> tuple[dict[str, np.ndarray], int]:
     features, labels = zip(*encodings)
-    sgf_path = Path(file_name)
     feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
     label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
     data = {

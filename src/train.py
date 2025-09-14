@@ -11,7 +11,7 @@ from keras.api.callbacks import BackupAndRestore
 
 from metadata import decode_metadata
 from models import get_large_model
-from utils.fileinfo import FileInfo, decode_file_info
+from utils.fileinfo import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
 
 
@@ -88,7 +88,8 @@ def evaluate(model: keras.Model, testing_data: Iterable[np.ndarray], batch_size:
 
 def load_metadata(encodings_directory):
     for file_path in encodings_directory.glob("*.json"):
-        yield json.load(file_path, object_hook=decode_metadata())
+        with file_path.open("r") as file:
+            yield json.load(file)
 
 
 def main(
@@ -99,6 +100,7 @@ def main(
     encodings_directory = base_directory / "encodings"
     model_directory = base_directory / "model"
     metadata = list(load_metadata(encodings_directory))
+    typer.echo(f'Metadata: {metadata}')
     test_sample_file = base_directory / "test.json"
     training_files, testing_files = sample_data(
         list(files), test_size, test_sample_file

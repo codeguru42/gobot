@@ -19,15 +19,14 @@ class TarfileMetadata:
 
 
 def decode_metadata(data):
-    return TarfileMetadata(
-        path=data["path"],
-        game_count=data["game_count"],
-        games=list(
-            decode_games(data["games"]),
-        ),
-    )
-
-
-def decode_games(data):
-    for game in data:
-        yield GameMetadata(name=data["name"], move_count=game["move_count"])
+    match data:
+        case {"path": path, "game_count": game_count, "games": games}:
+            return TarfileMetadata(
+                path=path,
+                game_count=game_count,
+                games=games,
+            )
+        case {"name": name, "move_count": move_count}:
+            return GameMetadata(name=name, move_count=move_count)
+        case _:
+            raise ValueError(f"Unknown metadata format: {data}")

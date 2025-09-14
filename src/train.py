@@ -1,7 +1,6 @@
 import itertools
 import json
 import random
-import tarfile
 from pathlib import Path
 from typing import Iterable, Sequence, Annotated
 
@@ -9,12 +8,10 @@ import keras
 import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
-from numpy import ndarray
 
-from encode import encode_file
+from metadata import decode_metadata
 from models import get_large_model
-from utils.fileinfo import FileInfo
-from utils.json_decoders import decode_file_info
+from utils.fileinfo import FileInfo, decode_file_info
 from utils.json_encoders import CustomJSONEncoder
 
 
@@ -30,35 +27,6 @@ def sample_data[T](
             json.dump(testing, f, cls=CustomJSONEncoder)
     training = list(set(data) - set(testing))
     return training, testing
-
-
-def get_sgf_files(data_directory: Path) -> Iterable[FileInfo]:
-    for file in data_directory.glob("*.tar.gz"):
-        yield from get_file_info(file)
-
-
-def get_file_info(file):
-    with tarfile.open(file, "r:gz") as tar:
-        for member in tar.getmembers():
-            if member.isfile():
-                yield FileInfo(file.absolute(), member.name)
-
-
-def encode_from_file_info(
-    file_info: FileInfo,
-) -> Iterable[tuple[ndarray, ndarray]]:
-    with tarfile.open(file_info.tarfile) as tar:
-        sgf_file = tar.extractfile(file_info.filename)
-        if sgf_file is None:
-            yield from []
-        yield from encode_file(sgf_file)
-
-
-def encode_from_file_info_generator(
-    files: Iterable[FileInfo],
-) -> Iterable[tuple[np.ndarray, np.ndarray]]:
-    for file_info in files:
-        yield from encode_from_file_info(file_info)
 
 
 def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
@@ -90,14 +58,12 @@ def batches(data, batch_size):
 
 def train(
     model: keras.models.Model,
-    training_files: Iterable[FileInfo],
-    validation_files: Iterable[FileInfo],
+    training_data: Iterable[np.ndarray],
+    validation_data: Iterable[np.ndarray],
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
     typer.echo("Training model")
-    training_data = encode_from_file_info_generator(training_files)
-    validation_data = encode_from_file_info_generator(validation_files)
 
     model.compile(
         loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
@@ -112,27 +78,32 @@ def train(
     return model
 
 
-def evaluate(model: keras.Model, testing_files: Iterable[FileInfo], batch_size: int):
+def evaluate(model: keras.Model, testing_data: Iterable[np.ndarray], batch_size: int):
     typer.echo("Evaluating model")
-    testing_data = encode_from_file_info_generator(testing_files)
     testing_batches = batches(testing_data, batch_size)
     score = model.evaluate(testing_batches, verbose=0)
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
 
 
+def load_metadata(encodings_directory):
+    for file_path in encodings_directory.glob("*.json"):
+        yield json.load(file_path, object_hook=decode_metadata())
+
+
 def main(
-    input_directory: Path,
+    base_directory: Path,
     test_size: Annotated[int, typer.Option("--test_size")] = 100,
     batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
 ):
-    output_directory = input_directory / "model"
-    files = get_sgf_files(input_directory)
-    test_sample_file = input_directory / "test.json"
+    encodings_directory = base_directory / "encodings"
+    model_directory = base_directory / "model"
+    metadata = list(load_metadata(encodings_directory))
+    test_sample_file = base_directory / "test.json"
     training_files, testing_files = sample_data(
         list(files), test_size, test_sample_file
     )
-    validation_sample_file = input_directory / "validation.json"
+    validation_sample_file = base_directory / "validation.json"
     training_files, validation_files = sample_data(
         list(training_files), test_size, validation_sample_file
     )
@@ -141,10 +112,10 @@ def main(
     typer.echo(f"Validation {len(validation_files)} games")
     input_shape = (1, 19, 19)
     model = get_large_model(input_shape)
-    model = train(model, training_files, validation_files, batch_size, output_directory)
+    model = train(model, training_files, validation_files, batch_size, model_directory)
     evaluate(model, testing_files, batch_size)
-    output_directory.mkdir(parents=True, exist_ok=True)
-    model_file = output_directory / "final.keras"
+    model_directory.mkdir(parents=True, exist_ok=True)
+    model_file = model_directory / "final.keras"
     model.save(model_file)
 
 

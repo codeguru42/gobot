@@ -89,7 +89,7 @@ def evaluate(model: keras.Model, testing_data: Iterable[np.ndarray], batch_size:
 def load_metadata(encodings_directory):
     for file_path in encodings_directory.glob("*.json"):
         with file_path.open("r") as file:
-            yield json.load(file)
+            yield from json.load(file, object_hook=decode_metadata)
 
 
 def main(

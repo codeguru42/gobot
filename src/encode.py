@@ -100,7 +100,7 @@ def save_encodings(
     np.savez(npz_path, **data)
     metadata_path = output_directory / tarfile_path.stem
     with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
-        json.dump(games, metadata_file, cls=CustomJSONEncoder)
+        json.dump(games, metadata_file, cls=CustomJSONEncoder, indent=2)
 
 
 def process_all_encodings(

@@ -117,7 +117,7 @@ def process_all_encodings(
                 GameMetadata(tarfile=tarfile, sgf_file=file_name, move_count=move_count)
             )
         except Exception as e:
-            typer.echo("ERROR: Skipping.")
+            typer.echo(f"ERROR: Skipping {file_name}")
             typer.echo(e)
     return data, games
 

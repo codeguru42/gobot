@@ -9,9 +9,8 @@ import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
 
-from metadata import decode_metadata
+from metadata import decode_metadata, GameMetadata
 from models import get_large_model
-from utils.fileinfo import decode_file_info
 from utils.json_encoders import CustomJSONEncoder
 
 
@@ -20,7 +19,7 @@ def sample_data[T](
 ) -> tuple[list[T], list[T]]:
     if sample_file.exists():
         with sample_file.open("r") as f:
-            testing = json.load(f, object_hook=decode_file_info)
+            testing = json.load(f, object_hook=decode_metadata())
     else:
         testing = random.sample(data, k)
         with sample_file.open("w") as f:

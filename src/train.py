@@ -9,7 +9,7 @@ import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
 
-from metadata import decode_metadata, GameMetadata
+from metadata import decode_metadata, GameMetadata, total_move_count
 from models import get_large_model
 from utils.json_encoders import CustomJSONEncoder
 
@@ -117,9 +117,9 @@ def main(
     training_files, validation_files = sample_data(
         list(training_files), test_size, validation_sample_file
     )
-    typer.echo(f"\nTraining {len(training_files)} games")
-    typer.echo(f"Testing {len(testing_files)} games")
-    typer.echo(f"Validation {len(validation_files)} games")
+    typer.echo(f"\nTraining {len(training_files)} games with {total_move_count(training_files)} moves")
+    typer.echo(f"Testing {len(testing_files)} games with {total_move_count(testing_files)} moves")
+    typer.echo(f"Validation {len(validation_files)} games with {total_move_count(validation_files)} moves")
     input_shape = (1, 19, 19)
     training_data = load_encodings(training_files)
     validation_data = load_encodings(validation_files)

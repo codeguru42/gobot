@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 
-@dataclass
+@dataclass(frozen=True)
 class GameMetadata:
     tarfile: Path
     sgf_file: Path

@@ -19,7 +19,7 @@ def sample_data[T](
 ) -> tuple[list[T], list[T]]:
     if sample_file.exists():
         with sample_file.open("r") as f:
-            testing = json.load(f, object_hook=decode_metadata())
+            testing = json.load(f, object_hook=decode_metadata)
     else:
         testing = random.sample(data, k)
         with sample_file.open("w") as f:
@@ -53,6 +53,14 @@ def batches(data, batch_size):
             features.append(feature)
             labels.append(label)
         yield np.array(features), np.array(labels)
+
+
+def load_encodings(
+    metadata: Iterable[GameMetadata], encodings_directory: Path
+) -> Iterable[np.ndarray]:
+    for item in metadata:
+        npz = np.load(encodings_directory / f"{item.tarfile.stem}.npz")
+        yield npz.get(item.sgf_file)
 
 
 def train(
@@ -99,10 +107,11 @@ def main(
     encodings_directory = base_directory / "encodings"
     model_directory = base_directory / "model"
     metadata = list(load_metadata(encodings_directory))
-    typer.echo(f'Metadata: {metadata}')
     test_sample_file = base_directory / "test.json"
     training_files, testing_files = sample_data(
-        list(files), test_size, test_sample_file
+        metadata,
+        test_size,
+        test_sample_file,
     )
     validation_sample_file = base_directory / "validation.json"
     training_files, validation_files = sample_data(
@@ -112,9 +121,12 @@ def main(
     typer.echo(f"Testing {len(testing_files)} games")
     typer.echo(f"Validation {len(validation_files)} games")
     input_shape = (1, 19, 19)
+    training_data = load_encodings(training_files, encodings_directory)
+    validation_data = load_encodings(validation_files, encodings_directory)
+    testing_data = load_encodings(testing_files, encodings_directory)
     model = get_large_model(input_shape)
-    model = train(model, training_files, validation_files, batch_size, model_directory)
-    evaluate(model, testing_files, batch_size)
+    model = train(model, training_data, validation_data, batch_size, model_directory)
+    evaluate(model, testing_data, batch_size)
     model_directory.mkdir(parents=True, exist_ok=True)
     model_file = model_directory / "final.keras"
     model.save(model_file)

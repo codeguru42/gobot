@@ -94,9 +94,9 @@ def save_encodings(
     output_directory: Path,
 ):
     typer.echo(f"Saving encodings for {tarfile_path}")
-    data, games = process_all_encodings(tarfile_path, contents)
+    npz_path = output_directory / f"{tarfile_path.stem}.npz"
+    data, games = process_all_encodings(npz_path, contents)
     output_directory.mkdir(parents=True, exist_ok=True)
-    npz_path = output_directory / tarfile_path.stem
     np.savez(npz_path, **data)
     metadata_path = output_directory / tarfile_path.stem
     with open(metadata_path.with_suffix(".json"), "w") as metadata_file:
@@ -104,7 +104,7 @@ def save_encodings(
 
 
 def process_all_encodings(
-    tarfile: Path,
+    npz_path: Path,
     contents: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
 ) -> tuple[dict[Path, np.ndarray], list[GameMetadata]]:
     data = {}
@@ -114,7 +114,12 @@ def process_all_encodings(
             subdata, move_count = process_encodings(file_name, encs)
             data.update(subdata)
             games.append(
-                GameMetadata(tarfile=tarfile, sgf_file=file_name, move_count=move_count)
+                GameMetadata(
+                    npz_path=npz_path,
+                    features_array=f"features/{file_name}",
+                    labels_array=f"labels/{file_name}",
+                    move_count=move_count,
+                )
             )
         except Exception as e:
             typer.echo(f"ERROR: Skipping {file_name}")

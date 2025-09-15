@@ -56,17 +56,17 @@ def batches(data, batch_size):
 
 
 def load_encodings(
-    metadata: Iterable[GameMetadata], encodings_directory: Path
-) -> Iterable[np.ndarray]:
+    metadata: Iterable[GameMetadata]
+) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for item in metadata:
-        npz = np.load(encodings_directory / f"{item.tarfile.stem}.npz")
-        yield npz.get(item.sgf_file)
+        npz = np.load(item.npz_path)
+        yield npz.get(item.features_array), npz.get(item.labels_array)
 
 
 def train(
     model: keras.models.Model,
-    training_data: Iterable[np.ndarray],
-    validation_data: Iterable[np.ndarray],
+    training_data: Iterable[tuple[np.ndarray, np.ndarray]],
+    validation_data: Iterable[tuple[np.ndarray, np.ndarray]],
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
@@ -85,7 +85,7 @@ def train(
     return model
 
 
-def evaluate(model: keras.Model, testing_data: Iterable[np.ndarray], batch_size: int):
+def evaluate(model: keras.Model, testing_data: Iterable[tuple[np.ndarray, np.ndarray]], batch_size: int):
     typer.echo("Evaluating model")
     testing_batches = batches(testing_data, batch_size)
     score = model.evaluate(testing_batches, verbose=0)
@@ -121,9 +121,9 @@ def main(
     typer.echo(f"Testing {len(testing_files)} games")
     typer.echo(f"Validation {len(validation_files)} games")
     input_shape = (1, 19, 19)
-    training_data = load_encodings(training_files, encodings_directory)
-    validation_data = load_encodings(validation_files, encodings_directory)
-    testing_data = load_encodings(testing_files, encodings_directory)
+    training_data = load_encodings(training_files)
+    validation_data = load_encodings(validation_files)
+    testing_data = load_encodings(testing_files)
     model = get_large_model(input_shape)
     model = train(model, training_data, validation_data, batch_size, model_directory)
     evaluate(model, testing_data, batch_size)

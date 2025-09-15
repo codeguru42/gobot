@@ -66,21 +66,21 @@ def encode_file(
 
 def encode_all_files(
     sgf_files: Iterable[IO[bytes]],
-) -> Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]:
+) -> Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
-        yield Path(file.name), encode_file(file)
+        yield file.name, encode_file(file)
 
 
 def encode_tar_files(
     extracted_files: Iterable[tuple[Path, Iterable[IO[bytes]]]],
-) -> Iterable[tuple[Path, Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]]]:
+) -> Iterable[tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]]:
     for tar_file, sgf_files in extracted_files:
         yield tar_file, encode_all_files(sgf_files)
 
 
 def save_all_encodings(
     encodings: Iterable[
-        tuple[Path, Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]]]
+        tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]
     ],
     output_directory: Path,
 ) -> None:
@@ -90,7 +90,7 @@ def save_all_encodings(
 
 def save_encodings(
     tarfile_path: Path,
-    contents: Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]],
+    contents: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
     output_directory: Path,
 ):
     typer.echo(f"Saving encodings for {tarfile_path}")
@@ -105,7 +105,7 @@ def save_encodings(
 
 def process_all_encodings(
     tarfile: Path,
-    contents: Iterable[tuple[Path, list[tuple[np.ndarray, np.ndarray]]]],
+    contents: Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]],
 ) -> tuple[dict[Path, np.ndarray], list[GameMetadata]]:
     data = {}
     games = []
@@ -123,12 +123,12 @@ def process_all_encodings(
 
 
 def process_encodings(
-    sgf_path: Path,
+    sgf_path: str,
     encodings,
 ) -> tuple[dict[str, np.ndarray], int]:
     features, labels = zip(*encodings)
-    feature_path = sgf_path.parent / f"features_{sgf_path.stem}"
-    label_path = sgf_path.parent / f"labels_{sgf_path.stem}"
+    feature_path = f"features/{sgf_path}"
+    label_path = f"labels/{sgf_path}"
     data = {
         str(feature_path): np.concatenate(features),
         str(label_path): np.concatenate(labels),

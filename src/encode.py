@@ -135,8 +135,8 @@ def process_encodings(
     feature_path = f"features/{sgf_path}"
     label_path = f"labels/{sgf_path}"
     data = {
-        str(feature_path): np.concatenate(features),
-        str(label_path): np.concatenate(labels),
+        str(feature_path): np.array(features),
+        str(label_path): np.array(labels),
     }
     return data, len(features)
 

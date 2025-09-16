@@ -23,7 +23,7 @@ def sample_data[T](
     else:
         testing = random.sample(data, k)
         with sample_file.open("w") as f:
-            json.dump(testing, f, cls=CustomJSONEncoder)
+            json.dump(testing, f, cls=CustomJSONEncoder, indent=2)
     training = list(set(data) - set(testing))
     return training, testing
 

@@ -54,7 +54,7 @@ def batches(data, batch_size):
 
 
 def load_encodings(
-    metadata: Iterable[GameMetadata]
+    metadata: Iterable[GameMetadata],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     for item in metadata:
         npz = np.load(item.npz_path)
@@ -83,7 +83,11 @@ def train(
     return model
 
 
-def evaluate(model: keras.Model, testing_data: Iterable[tuple[np.ndarray, np.ndarray]], batch_size: int):
+def evaluate(
+    model: keras.Model,
+    testing_data: Iterable[tuple[np.ndarray, np.ndarray]],
+    batch_size: int,
+):
     typer.echo("Evaluating model")
     testing_batches = batches(testing_data, batch_size)
     score = model.evaluate(testing_batches, verbose=0)
@@ -115,9 +119,15 @@ def main(
     training_files, validation_files = sample_data(
         list(training_files), test_size, validation_sample_file
     )
-    typer.echo(f"\nTraining {len(training_files)} games with {total_move_count(training_files)} moves")
-    typer.echo(f"Testing {len(testing_files)} games with {total_move_count(testing_files)} moves")
-    typer.echo(f"Validation {len(validation_files)} games with {total_move_count(validation_files)} moves")
+    typer.echo(
+        f"\nTraining {len(training_files)} games with {total_move_count(training_files)} moves"
+    )
+    typer.echo(
+        f"Testing {len(testing_files)} games with {total_move_count(testing_files)} moves"
+    )
+    typer.echo(
+        f"Validation {len(validation_files)} games with {total_move_count(validation_files)} moves"
+    )
     input_shape = (1, 19, 19)
     training_data = load_encodings(training_files)
     validation_data = load_encodings(validation_files)

@@ -46,13 +46,11 @@ def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
 
 
 def batches(data, batch_size):
-    for batch in grouper(data, batch_size, incomplete="ignore"):
-        features = []
-        labels = []
-        for feature, label in batch:
-            features.append(feature)
-            labels.append(label)
-        yield np.array(features), np.array(labels)
+    for feature, label in data:
+        while feature.shape[0] > batch_size:
+            yield feature[:batch_size], label[:batch_size]
+            feature = feature[batch_size:]
+            label = label[batch_size:]
 
 
 def load_encodings(

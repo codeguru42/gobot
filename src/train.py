@@ -10,7 +10,7 @@ import typer
 from keras.api.callbacks import BackupAndRestore
 
 from metadata import decode_metadata, GameMetadata, total_move_count
-from models import get_large_model
+from models import get_small_model
 from utils.json_encoders import CustomJSONEncoder
 
 
@@ -132,7 +132,7 @@ def main(
     training_data = load_encodings(training_files)
     validation_data = load_encodings(validation_files)
     testing_data = load_encodings(testing_files)
-    model = get_large_model(input_shape)
+    model = get_small_model(input_shape)
     model = train(model, training_data, validation_data, batch_size, model_directory)
     evaluate(model, testing_data, batch_size)
     model_directory.mkdir(parents=True, exist_ok=True)

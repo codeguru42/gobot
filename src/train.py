@@ -56,9 +56,10 @@ def batches(data, batch_size):
 def load_encodings(
     metadata: Iterable[GameMetadata],
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
-    for item in metadata:
-        npz = np.load(item.npz_path)
-        yield npz.get(item.features_array), npz.get(item.labels_array)
+    while True:
+        for item in metadata:
+            npz = np.load(item.npz_path)
+            yield npz.get(item.features_array), npz.get(item.labels_array)
 
 
 def train(

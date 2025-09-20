@@ -31,3 +31,7 @@ def decode_metadata(data):
 
 def total_move_count(metadata: Iterable[GameMetadata]) -> int:
     return sum(item.move_count for item in metadata)
+
+
+def total_steps(metadata: Iterable[GameMetadata], batch_size: int) -> int:
+    return sum(item.move_count // batch_size for item in metadata)

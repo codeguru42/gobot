@@ -9,7 +9,7 @@ import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
 
-from metadata import decode_metadata, GameMetadata, total_move_count
+from metadata import decode_metadata, GameMetadata, total_move_count, total_steps
 from models import get_small_model
 from utils.json_encoders import CustomJSONEncoder
 
@@ -65,7 +65,7 @@ def load_encodings(
 def train(
     model: keras.models.Model,
     training_data: Iterable[tuple[np.ndarray, np.ndarray]],
-    training_count: int,
+    steps_count: int,
     validation_data: Iterable[tuple[np.ndarray, np.ndarray]],
     batch_size: int,
     output_directory: Path,
@@ -79,7 +79,7 @@ def train(
         batches(training_data, batch_size),
         validation_data=validation_data,
         epochs=15,
-        steps_per_epoch=training_count // batch_size,
+        steps_per_epoch=steps_count,
         verbose=2,
         callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
     )
@@ -89,13 +89,15 @@ def train(
 def evaluate(
     model: keras.Model,
     testing_data: Iterable[tuple[np.ndarray, np.ndarray]],
-    testing_count: int,
+    steps_count: int,
     batch_size: int,
 ):
     typer.echo("Evaluating model")
     testing_batches = batches(testing_data, batch_size)
     score = model.evaluate(
-        testing_batches, verbose=0, steps=testing_count // batch_size
+        testing_batches,
+        verbose=0,
+        steps=steps_count,
     )
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
@@ -136,20 +138,20 @@ def main(
     )
     input_shape = (1, 19, 19)
     training_data = load_encodings(training_files)
-    training_count = total_move_count(training_files)
+    training_steps = total_steps(training_files, batch_size)
     validation_data = load_encodings(validation_files)
     testing_data = load_encodings(testing_files)
-    testing_count = total_move_count(testing_files)
+    testing_steps = total_steps(testing_files, batch_size)
     model = get_small_model(input_shape)
     model = train(
         model,
         training_data,
-        training_count,
+        training_steps,
         validation_data,
         batch_size,
         model_directory,
     )
-    evaluate(model, testing_data, testing_count, batch_size)
+    evaluate(model, testing_data, testing_steps, batch_size)
     model_directory.mkdir(parents=True, exist_ok=True)
     model_file = model_directory / "final.keras"
     model.save(model_file)

@@ -59,7 +59,10 @@ def load_encodings(
     while True:
         for item in metadata:
             npz = np.load(item.npz_path)
-            yield npz.get(item.features_array), npz.get(item.labels_array)
+            features = npz.get(item.features_array)
+            labels = npz.get(item.labels_array)
+            assert features.shape[0] == labels.shape[0] == item.move_count
+            yield features, labels
 
 
 def train(

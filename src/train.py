@@ -47,7 +47,7 @@ def grouper(iterable, n, *, incomplete="fill", fillvalue=None):
 
 def batches(data, batch_size):
     for feature, label in data:
-        while feature.shape[0] > batch_size:
+        while feature.shape[0] >= batch_size:
             yield feature[:batch_size], label[:batch_size]
             feature = feature[batch_size:]
             label = label[batch_size:]

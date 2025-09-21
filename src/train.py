@@ -80,7 +80,7 @@ def train(
     )
     model.fit(
         batches(training_data, batch_size),
-        validation_data=validation_data,
+        validation_data=batches(validation_data, batch_size),
         epochs=15,
         steps_per_epoch=steps_count,
         verbose=2,

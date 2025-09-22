@@ -53,6 +53,7 @@ def train(
     training_data: Iterable[tuple[np.ndarray, np.ndarray]],
     steps_count: int,
     validation_data: Iterable[tuple[np.ndarray, np.ndarray]],
+    validation_steps: int,
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
@@ -66,6 +67,7 @@ def train(
         validation_data=batches(validation_data, batch_size),
         epochs=15,
         steps_per_epoch=steps_count,
+        validation_steps=validation_steps,
         verbose=2,
         callbacks=[BackupAndRestore(output_directory, delete_checkpoint=False)],
     )
@@ -126,6 +128,7 @@ def main(
     training_data = load_encodings(training_files)
     training_steps = total_steps(training_files, batch_size)
     validation_data = load_encodings(validation_files)
+    validation_steps = total_steps(validation_files, batch_size)
     testing_data = load_encodings(testing_files)
     testing_steps = total_steps(testing_files, batch_size)
     model = get_small_model(input_shape)
@@ -134,6 +137,7 @@ def main(
         training_data,
         training_steps,
         validation_data,
+        validation_steps,
         batch_size,
         model_directory,
     )

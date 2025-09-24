@@ -54,6 +54,7 @@ def train(
     steps_count: int,
     validation_data: Iterable[tuple[np.ndarray, np.ndarray]],
     validation_steps: int,
+    epochs: int,
     batch_size: int,
     output_directory: Path,
 ) -> keras.Model:
@@ -65,7 +66,7 @@ def train(
     model.fit(
         batches(training_data, batch_size),
         validation_data=batches(validation_data, batch_size),
-        epochs=15,
+        epochs=epochs,
         steps_per_epoch=steps_count,
         validation_steps=validation_steps,
         verbose=2,
@@ -99,8 +100,9 @@ def load_metadata(encodings_directory):
 
 def main(
     base_directory: Path,
-    test_size: Annotated[int, typer.Option("--test_size")] = 100,
-    batch_size: Annotated[int, typer.Option("--batch_size")] = 64,
+    epochs: Annotated[int, typer.Option("--epochs", "-e")] = 15,
+    test_size: Annotated[int, typer.Option("--test_size", "-t")] = 100,
+    batch_size: Annotated[int, typer.Option("--batch_size", "-b")] = 64,
 ):
     encodings_directory = base_directory / "encodings"
     model_directory = base_directory / "model"
@@ -138,6 +140,7 @@ def main(
         training_steps,
         validation_data,
         validation_steps,
+        epochs,
         batch_size,
         model_directory,
     )

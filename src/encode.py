@@ -1,7 +1,7 @@
 import json
 import tarfile
 from pathlib import Path
-from typing import Iterable, IO
+from typing import Iterable, IO, Annotated
 
 import numpy as np
 import typer
@@ -141,7 +141,7 @@ def process_encodings(
     return data, len(features)
 
 
-def main(input_directory: Path):
+def main(input_directory: Path, epochs: Annotated[int, typer.Option('-e')] = 15, batch_size: Annotated[int, typer.Option('-b')] = 64):
     output_directory = input_directory / "encodings"
     typer.echo(f"Extracting files from {input_directory}")
     extracted_files = extract_all_files(input_directory)

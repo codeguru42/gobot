@@ -9,7 +9,7 @@ import typer
 from keras.api.callbacks import BackupAndRestore
 
 from metadata import decode_metadata, GameMetadata, total_move_count
-from models import get_small_model
+from models import get_large_model
 from utils.json_encoders import CustomJSONEncoder
 
 
@@ -136,7 +136,7 @@ def main(
     validation_steps = total_move_count(validation_files) // batch_size
     testing_data = load_encodings(testing_files)
     testing_steps = total_move_count(testing_files) // batch_size
-    model = get_small_model(input_shape)
+    model = get_large_model(input_shape)
     model = train(
         model,
         training_data,

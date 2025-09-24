@@ -8,7 +8,7 @@ import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
 
-from metadata import decode_metadata, GameMetadata, total_move_count, total_steps
+from metadata import decode_metadata, GameMetadata, total_move_count
 from models import get_small_model
 from utils.json_encoders import CustomJSONEncoder
 
@@ -28,7 +28,11 @@ def sample_data[T](
 
 
 def batches(data, batch_size):
-    for feature, label in data:
+    feature = np.empty((0, 1, 19, 19), dtype=np.int8)
+    label = np.empty((0, 361), dtype=np.int8)
+    for next_feature, next_label in data:
+        feature = np.concatenate((feature, next_feature), axis=0)
+        label = np.concatenate((label, next_label), axis=0)
         while feature.shape[0] >= batch_size:
             yield feature[:batch_size], label[:batch_size]
             feature = feature[batch_size:]
@@ -127,11 +131,11 @@ def main(
     )
     input_shape = (1, 19, 19)
     training_data = load_encodings(training_files)
-    training_steps = total_steps(training_files, batch_size)
+    training_steps = total_move_count(training_files) // batch_size
     validation_data = load_encodings(validation_files)
-    validation_steps = total_steps(validation_files, batch_size)
+    validation_steps = total_move_count(validation_files) // batch_size
     testing_data = load_encodings(testing_files)
-    testing_steps = total_steps(testing_files, batch_size)
+    testing_steps = total_move_count(testing_files) // batch_size
     model = get_small_model(input_shape)
     model = train(
         model,

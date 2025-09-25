@@ -17,8 +17,11 @@ def sample_data[T](
     data: Sequence[T], k: int, sample_file: Path
 ) -> tuple[list[T], list[T]]:
     if sample_file.exists():
-        with sample_file.open("r") as f:
-            testing = json.load(f, object_hook=decode_metadata)
+        try:
+            with sample_file.open("r") as f:
+                testing = json.load(f, object_hook=decode_metadata)
+        except ValueError as e:
+            raise ValueError(f"ERROR: Unable to decode {sample_file}", e)
     else:
         testing = random.sample(data, k)
         with sample_file.open("w") as f:
@@ -97,8 +100,11 @@ def evaluate(
 
 def load_metadata(encodings_directory):
     for file_path in encodings_directory.glob("*.json"):
-        with file_path.open("r") as file:
-            yield from json.load(file, object_hook=decode_metadata)
+        try:
+            with file_path.open("r") as file:
+                yield from json.load(file, object_hook=decode_metadata)
+        except ValueError as e:
+            raise ValueError(f"ERROR: Unable to decode {file_path}", e)
 
 
 def main(

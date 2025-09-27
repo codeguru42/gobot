@@ -8,24 +8,23 @@ import numpy as np
 import typer
 from keras.api.callbacks import BackupAndRestore
 
-from metadata import decode_metadata, GameMetadata, total_move_count
+from metadata import (
+    GameMetadata,
+    total_move_count,
+    save_metadata,
+    read_metadata,
+)
 from models import get_large_model
-from utils.json_encoders import CustomJSONEncoder
 
 
 def sample_data[T](
     data: Sequence[T], k: int, sample_file: Path
 ) -> tuple[list[T], list[T]]:
     if sample_file.exists():
-        try:
-            with sample_file.open("r") as f:
-                testing = json.load(f, object_hook=decode_metadata)
-        except ValueError as e:
-            raise ValueError(f"ERROR: Unable to decode {sample_file}", e)
+        testing = read_metadata(sample_file)
     else:
         testing = random.sample(data, k)
-        with sample_file.open("w") as f:
-            json.dump(testing, f, cls=CustomJSONEncoder, indent=2)
+        save_metadata(testing, sample_file)
     training = list(set(data) - set(testing))
     return training, testing
 

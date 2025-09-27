@@ -1,6 +1,9 @@
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
+
+from utils.json_encoders import CustomJSONEncoder
 
 
 @dataclass(frozen=True)
@@ -27,6 +30,19 @@ def decode_metadata(data):
             )
         case _:
             raise ValueError(f"Unknown metadata format: {data}")
+
+
+def read_metadata(metadata_path: Path) -> list[GameMetadata]:
+    try:
+        with metadata_path.open("r") as f:
+            return json.load(f, object_hook=decode_metadata)
+    except ValueError as e:
+        raise ValueError(f"ERROR: Unable to decode {metadata_path}", e)
+
+
+def save_metadata(metadata: Iterable[GameMetadata], metadata_path: Path) -> None:
+    with metadata_path.open("w") as f:
+        json.dump(list(metadata), f, cls=CustomJSONEncoder, indent=2)
 
 
 def total_move_count(metadata: Iterable[GameMetadata]) -> int:

@@ -1,4 +1,3 @@
-import json
 import random
 from pathlib import Path
 from typing import Iterable, Sequence, Annotated
@@ -13,6 +12,7 @@ from metadata import (
     total_move_count,
     save_metadata,
     read_metadata,
+    load_metadata,
 )
 from models import get_large_model
 
@@ -95,15 +95,6 @@ def evaluate(
     )
     typer.echo(f"\nTest loss: {score[0]}")
     typer.echo(f"Test accuracy: {score[1]}")
-
-
-def load_metadata(encodings_directory):
-    for file_path in encodings_directory.glob("*.json"):
-        try:
-            with file_path.open("r") as file:
-                yield from json.load(file, object_hook=decode_metadata)
-        except ValueError as e:
-            raise ValueError(f"ERROR: Unable to decode {file_path}", e)
 
 
 def main(

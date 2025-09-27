@@ -100,22 +100,27 @@ def evaluate(
 def main(
     base_directory: Path,
     epochs: Annotated[int, typer.Option("--epochs", "-e")] = 15,
-    test_size: Annotated[int, typer.Option("--test_size", "-t")] = 100,
     batch_size: Annotated[int, typer.Option("--batch_size", "-b")] = 64,
+    test_proportion: Annotated[float, typer.Option("-t")] = 0.10,
+    validation_proportion: Annotated[float, typer.Option("-v")] = 0.10,
 ):
     encodings_directory = base_directory / "encodings"
     model_directory = base_directory / "model"
     metadata = list(load_metadata(encodings_directory))
+    test_count = int(test_proportion * len(metadata))
     test_sample_file = base_directory / "test.json"
     training_files, testing_files = sample_data(
         metadata,
-        test_size,
+        test_count,
         test_sample_file,
     )
+
     validation_sample_file = base_directory / "validation.json"
+    validation_count = int(validation_proportion * len(metadata))
     training_files, validation_files = sample_data(
-        list(training_files), test_size, validation_sample_file
+        list(training_files), validation_count, validation_sample_file
     )
+
     typer.echo(
         f"\nTraining {len(training_files)} games with {total_move_count(training_files)} moves"
     )
@@ -125,9 +130,11 @@ def main(
     typer.echo(
         f"Validation {len(validation_files)} games with {total_move_count(validation_files)} moves"
     )
+
     input_shape = (1, 19, 19)
     training_data = load_encodings(training_files)
-    training_steps = total_move_count(training_files) // batch_size
+    training_count = total_move_count(training_files)
+    training_steps = training_count // batch_size
     validation_data = load_encodings(validation_files)
     validation_steps = total_move_count(validation_files) // batch_size
     testing_data = load_encodings(testing_files)

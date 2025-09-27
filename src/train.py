@@ -118,7 +118,7 @@ def main(
     validation_sample_file = base_directory / "validation.json"
     validation_count = int(validation_proportion * len(metadata))
     training_files, validation_files = sample_data(
-        list(training_files), validation_count, validation_sample_file
+        training_files, validation_count, validation_sample_file
     )
 
     typer.echo(

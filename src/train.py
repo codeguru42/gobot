@@ -99,7 +99,7 @@ def evaluate(
 
 def main(
     base_directory: Path,
-    epochs: Annotated[int, typer.Option("--epochs", "-e")] = 15,
+    epochs: Annotated[int, typer.Option("--epochs", "-e")] = 5,
     batch_size: Annotated[int, typer.Option("--batch_size", "-b")] = 64,
     test_proportion: Annotated[float, typer.Option("-t")] = 0.10,
     validation_proportion: Annotated[float, typer.Option("-v")] = 0.10,

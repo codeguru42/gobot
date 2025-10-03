@@ -1,7 +1,7 @@
 import json
 import tarfile
 from pathlib import Path
-from typing import Iterable, IO, Annotated
+from typing import Iterable, IO
 
 import numpy as np
 import typer

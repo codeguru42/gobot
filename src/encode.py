@@ -115,7 +115,7 @@ def process_all_encodings(
             data.update(subdata)
             games.append(
                 GameMetadata(
-                    npz_path=npz_path.name,
+                    npz_name=npz_path.name,
                     features_array=f"features/{file_name}",
                     labels_array=f"labels/{file_name}",
                     move_count=move_count,

@@ -47,7 +47,7 @@ def load_encodings(
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     while True:
         for item in metadata:
-            npz = np.load(encodings_directory / item.npz_path)
+            npz = np.load(encodings_directory / item.npz_name)
             features = npz.get(item.features_array)
             labels = npz.get(item.labels_array)
             assert features.shape[0] == labels.shape[0] == item.move_count

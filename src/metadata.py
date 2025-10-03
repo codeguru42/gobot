@@ -8,7 +8,7 @@ from utils.json_encoders import CustomJSONEncoder
 
 @dataclass(frozen=True)
 class GameMetadata:
-    npz_path: str
+    npz_name: str
     features_array: str
     labels_array: str
     move_count: int
@@ -17,13 +17,13 @@ class GameMetadata:
 def decode_metadata(data):
     match data:
         case {
-            "npz_path": npz,
+            "npz_name": npz,
             "features_array": features,
             "labels_array": labels,
             "move_count": move_count,
         }:
             return GameMetadata(
-                npz_path=npz,
+                npz_name=npz,
                 features_array=features,
                 labels_array=labels,
                 move_count=move_count,

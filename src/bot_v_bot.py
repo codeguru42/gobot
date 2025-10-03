@@ -30,10 +30,10 @@ def main(model_path: Path):
     while not game.is_over():
         print(chr(27) + "[2J")
         print_board(game.board)
+        input("Press Enter to continue...")
         bot_move = bots[game.next_player].select_move(game)
         print_move(game.next_player, bot_move)
         game = game.apply_move(bot_move)
-        input("Press Enter to continue...")
     print(f"{game.winner()} wins")
 
 

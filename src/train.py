@@ -43,10 +43,11 @@ def batches(data, batch_size):
 
 def load_encodings(
     metadata: Iterable[GameMetadata],
+    encodings_directory: Path,
 ) -> Iterable[tuple[np.ndarray, np.ndarray]]:
     while True:
         for item in metadata:
-            npz = np.load(item.npz_path)
+            npz = np.load(encodings_directory / item.npz_path)
             features = npz.get(item.features_array)
             labels = npz.get(item.labels_array)
             assert features.shape[0] == labels.shape[0] == item.move_count
@@ -134,12 +135,12 @@ def main(
     )
 
     input_shape = (1, 19, 19)
-    training_data = load_encodings(training_files)
+    training_data = load_encodings(training_files, encodings_directory)
     training_count = total_move_count(training_files)
     training_steps = training_count // batch_size
-    validation_data = load_encodings(validation_files)
+    validation_data = load_encodings(validation_files, encodings_directory)
     validation_steps = total_move_count(validation_files) // batch_size
-    testing_data = load_encodings(testing_files)
+    testing_data = load_encodings(testing_files, encodings_directory)
     testing_steps = total_move_count(testing_files) // batch_size
     model = get_large_model(input_shape)
     model = train(

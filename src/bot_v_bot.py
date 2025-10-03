@@ -33,6 +33,7 @@ def main(model_path: Path):
         bot_move = bots[game.next_player].select_move(game)
         print_move(game.next_player, bot_move)
         game = game.apply_move(bot_move)
+        input("Press Enter to continue...")
     print(f"{game.winner()} wins")
 
 

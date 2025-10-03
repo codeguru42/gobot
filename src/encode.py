@@ -142,9 +142,10 @@ def process_encodings(
 
 
 def main(input_directory: Path, epochs: Annotated[int, typer.Option('-e')] = 15, batch_size: Annotated[int, typer.Option('-b')] = 64):
+    data_directory = input_directory / "data"
     output_directory = input_directory / "encodings"
-    typer.echo(f"Extracting files from {input_directory}")
-    extracted_files = extract_all_files(input_directory)
+    typer.echo(f"Extracting files from {data_directory}")
+    extracted_files = extract_all_files(data_directory)
     typer.echo("Encoding games...")
     encodings = encode_tar_files(extracted_files)
     typer.echo("Saving encodings...")

@@ -141,7 +141,7 @@ def process_encodings(
     return data, len(features)
 
 
-def main(input_directory: Path, epochs: Annotated[int, typer.Option('-e')] = 15, batch_size: Annotated[int, typer.Option('-b')] = 64):
+def main(input_directory: Path):
     data_directory = input_directory / "data"
     output_directory = input_directory / "encodings"
     typer.echo(f"Extracting files from {data_directory}")

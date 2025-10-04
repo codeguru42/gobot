@@ -1,4 +1,5 @@
 import json
+import multiprocessing
 import tarfile
 from pathlib import Path
 from typing import Iterable, IO
@@ -13,14 +14,6 @@ from replay import visit_collection
 from sgf.parser import parse_sgf, Collection
 from sgf.tokenizer import tokens
 from utils.json_encoders import CustomJSONEncoder
-
-
-def extract_all_files(
-    input_directory: Path,
-) -> Iterable[tuple[Path, Iterable[IO[bytes]]]]:
-    for file in input_directory.glob("*.tar.gz"):
-        typer.echo(f"Extracting {file.name}")
-        yield file, extract_files(file)
 
 
 def extract_files(file: Path) -> Iterable[IO[bytes]]:
@@ -69,23 +62,6 @@ def encode_all_files(
 ) -> Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]:
     for file in sgf_files:
         yield file.name, encode_file(file)
-
-
-def encode_tar_files(
-    extracted_files: Iterable[tuple[Path, Iterable[IO[bytes]]]],
-) -> Iterable[tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]]:
-    for tar_file, sgf_files in extracted_files:
-        yield tar_file, encode_all_files(sgf_files)
-
-
-def save_all_encodings(
-    encodings: Iterable[
-        tuple[Path, Iterable[tuple[str, list[tuple[np.ndarray, np.ndarray]]]]]
-    ],
-    output_directory: Path,
-) -> None:
-    for tarfile_path, contents in encodings:
-        save_encodings(tarfile_path, contents, output_directory)
 
 
 def save_encodings(
@@ -141,15 +117,24 @@ def process_encodings(
     return data, len(features)
 
 
-def main(input_directory: Path):
-    data_directory = input_directory / "data"
-    output_directory = input_directory / "encodings"
-    typer.echo(f"Extracting files from {data_directory}")
-    extracted_files = extract_all_files(data_directory)
-    typer.echo("Encoding games...")
-    encodings = encode_tar_files(extracted_files)
-    typer.echo("Saving encodings...")
-    save_all_encodings(encodings, output_directory)
+def save_all_encodings(args: tuple[Path, Path]):
+    tarfile_path, encodings_directory = args
+    extracted_files = extract_files(tarfile_path)
+    encodings = encode_all_files(extracted_files)
+    save_encodings(tarfile_path, encodings, encodings_directory)
+
+
+def main(base_directory: Path):
+    data_directory = base_directory / "data"
+    encodings_directory = base_directory / "encodings"
+    with multiprocessing.Pool() as pool:
+        pool.map(
+            save_all_encodings,
+            [
+                (tarfile_path, encodings_directory)
+                for tarfile_path in data_directory.glob("*.tar.gz")
+            ],
+        )
 
 
 if __name__ == "__main__":

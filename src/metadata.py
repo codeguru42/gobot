@@ -49,6 +49,7 @@ def load_metadata(encodings_directory):
     for file_path in encodings_directory.glob("*.json"):
         yield from read_metadata(file_path)
 
+
 def total_move_count(metadata: Iterable[GameMetadata]) -> int:
     return sum(item.move_count for item in metadata)
 

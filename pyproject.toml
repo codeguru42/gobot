@@ -3,7 +3,7 @@ name = "gobot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = "~=3.12"
+requires-python = "==3.12.12"
 dependencies = [
     "beautifulsoup4>=4.14.0",
     "furl>=2.1.4",

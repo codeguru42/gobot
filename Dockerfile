@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.12-trixie
+FROM ghcr.io/astral-sh/uv:python3.12.12-trixie
 LABEL authors="codeguru"
 
 WORKDIR /app
